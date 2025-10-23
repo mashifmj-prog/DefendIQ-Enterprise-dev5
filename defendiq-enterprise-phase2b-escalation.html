@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DefendIQ Enterprise | Compliance Automation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --primary-light: #534bae;
+            --primary-dark: #000051;
+            --secondary: #00b0ff;
+            --accent: #ff4081;
+            --light: #f5f5f5;
+            --dark: #212121;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --gray: #9e9e9e;
+            --silver: #C0C0C0;
+            --gold: #FFD700;
+            --platinum: #E5E4E2;
+            --bronze: #CD7F32;
+            --copper: #B87333;
+            --bg-color: #f0f2f5;
+            --text-color: #212121;
+            --card-bg: white;
+            --sidebar-bg: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+            --header-bg: white;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #f5f5f5;
+            --card-bg: #1e1e1e;
+            --sidebar-bg: linear-gradient(to bottom, #0d0d3d, #000022);
+            --header-bg: #2d2d2d;
+            --light: #2d2d2d;
+            --gray: #aaaaaa;
+            --dark: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .logo-iq {
+            color: var(--secondary);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 10px 20px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background: var(--header-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .back-button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-right: 15px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #0091ea;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        /* Theme Toggle */
+        .theme-toggle-container {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 10;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-bg);
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            border: 1px solid var(--light);
+        }
+        
+        .theme-toggle i {
+            font-size: 18px;
+            color: var(--primary);
+        }
+        
+        .theme-toggle span {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        /* COMPLIANCE AUTOMATION STYLES */
+        .compliance-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .compliance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .compliance-title {
+            font-size: 24px;
+            color: var(--primary);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-overdue {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-urgent {
+            background-color: #fef3c7;
+            color: #92400e;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid var(--success);
+        }
+        
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-left: 4px solid var(--danger);
+        }
+        
+        .aup-document {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9fafb;
+        }
+        
+        .aup-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+        
+        .certificate-preview {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="%23e5e7eb" stroke-width="1"/></svg>');
+        }
+        
+        /* TRAINING COMPLIANCE STYLES */
+        .training-compliance-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .compliance-overview {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .escalation-timeline {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .timeline-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--light);
+            z-index: 1;
+        }
+        
+        .timeline-marker {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+        
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 3px solid var(--light);
+        }
+        
+        .timeline-marker.active .timeline-dot {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .timeline-marker.current .timeline-dot {
+            background: var(--warning);
+            border-color: var(--warning);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        .timeline-marker.future .timeline-dot {
+            background: var(--light);
+            border-color: var(--gray);
+            color: var(--gray);
+        }
+        
+        .timeline-label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .progress-section {
+            margin: 20px 0;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e5e7eb;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--success);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .compliance-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .escalation-details {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .email-preview {
+            background: white;
+            border: 1px solid var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .email-header {
+            border-bottom: 1px solid var(--light);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .team-management {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 20px;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .team-member {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .member-info {
+            flex: 1;
+        }
+        
+        .member-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .member-role {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .card-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .positive {
+            color: var(--success);
+        }
+        
+        .negative {
+            color: var(--danger);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .slogan {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        
+        .slogan-part1 {
+            color: #ffffff;
+        }
+        
+        .slogan-part2 {
+            color: var(--secondary);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn-hero {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        /* Security Tips Banner */
+        .tips-banner {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--secondary);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .tip-content {
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* ZaraAI Chat Interface */
+        .zara-ai-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .zara-header {
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .zara-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .zara-info h3 {
+            margin-bottom: 5px;
+        }
+        
+        .zara-info p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .zara-status {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success);
+            margin-right: 5px;
+        }
+        
+        .zara-chat {
+            height: 300px;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+        }
+        
+        .message.zara .message-content {
+            background-color: var(--light);
+            border-top-left-radius: 5px;
+        }
+        
+        .message.user .message-content {
+            background-color: var(--secondary);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+        
+        .zara-input {
+            display: flex;
+            padding: 15px;
+            background-color: var(--light);
+        }
+        
+        .zara-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--light);
+            border-radius: 24px;
+            outline: none;
+            font-size: 14px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .zara-input button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .zara-input button:hover {
+            background-color: var(--primary);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid var(--light);
+            margin-top: 30px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar-header .logo-text, 
+            .sidebar-menu span {
+                display: none;
+            }
+            
+            .sidebar-menu li {
+                text-align: center;
+                padding: 15px 10px;
+            }
+            
+            .sidebar-menu i {
+                margin-right: 0;
+                font-size: 20px;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .slogan {
+                font-size: 1.4rem;
+            }
+            
+            .theme-toggle-container {
+                top: 20px;
+                right: 20px;
+            }
+            
+            .training-compliance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 10px 0;
+            }
+            
+            .sidebar-menu li {
+                padding: 10px 15px;
+                white-space: nowrap;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-hero {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .theme-toggle-container {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: flex-end;
+            }
+            
+            .aup-actions {
+                flex-direction: column;
+            }
+            
+            .certificate-footer {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .compliance-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .timeline-container::before {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero {
+                padding: 40px 20px;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .slogan {
+                font-size: 1.2rem;
+            }
+            
+            .theme-toggle span {
+                display: none;
+            }
+            
+            .header-actions {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <div class="logo-text">Defend<span class="logo-iq">IQ</span> Enterprise</div>
+                </div>
+                <div>ZaraAI Integrated</div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="#" id="home-link"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                <li><a href="#"><i class="fas fa-search"></i> <span>Threat Analysis</span></a></li>
+                <li><a href="#"><i class="fas fa-shield-alt"></i> <span>Security Controls</span></a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> <span>Reports</span></a></li>
+                <li><a href="#" id="training-link"><i class="fas fa-graduation-cap"></i> <span>Training</span></a></li>
+                <li><a href="#" id="compliance-link"><i class="fas fa-clipboard-check"></i> <span>Compliance</span></a></li>
+                <li><a href="#" id="quiz-link"><i class="fas fa-question-circle"></i> <span>Knowledge Quiz</span></a></li>
+                <li><a href="#" id="certificates-link"><i class="fas fa-award"></i> <span>Certificates</span></a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Theme Toggle -->
+            <div class="theme-toggle-container">
+                <div class="theme-toggle" id="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                    <span id="theme-label">Dark Mode</span>
+                </div>
+            </div>
+            
+            <div class="header">
+                <div style="display: flex; align-items: center;">
+                    <button class="back-button" id="back-button" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <div class="page-title" id="page-title">Security Dashboard</div>
+                </div>
+                <div class="header-actions">
+                    <div class="crescent-indicator crescent-dark">🌙</div>
+                    <button class="btn btn-primary" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <div class="crescent-indicator crescent-light">☀️</div>
+                    <div class="user-info">
+                        <div class="user-avatar">MJ</div>
+                        <div>Admin User</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Tips Banner -->
+            <div class="tips-banner">
+                <div class="tip-content" id="tip-content">Use strong, unique passwords for all your accounts</div>
+            </div>
+            
+            <!-- Hero Section -->
+            <div class="hero" id="hero-section">
+                <div class="hero-content">
+                    <h1>Enterprise Cybersecurity Intelligence</h1>
+                    <div class="slogan">
+                        <span class="slogan-part1">Defend with Confidence</span> 
+                        <span class="slogan-part2">Grow with Ease</span>
+                    </div>
+                    <p>DefendIQ Enterprise with ZaraAI delivers advanced threat protection, security training, and compliance management in one integrated platform.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-hero btn-secondary">Request Demo</button>
+                        <button class="btn btn-hero btn-outline">Explore Features</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards" id="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Active Threats</div>
+                        <div class="card-icon" style="background-color: var(--danger);">⚠️</div>
+                    </div>
+                    <div class="card-value">12</div>
+                    <div class="card-change positive">↓ 3 from yesterday</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Protected Assets</div>
+                        <div class="card-icon" style="background-color: var(--success);">🛡️</div>
+                    </div>
+                    <div class="card-value">247</div>
+                    <div class="card-change positive">↑ 5 new</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Security Score</div>
+                        <div class="card-icon" style="background-color: var(--secondary);">📊</div>
+                    </div>
+                    <div class="card-value">92%</div>
+                    <div class="card-change positive">↑ 2% improvement</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Compliance Status</div>
+                        <div class="card-icon" style="background-color: var(--primary);">📝</div>
+                    </div>
+                    <div class="card-value">78%</div>
+                    <div class="card-change positive">AUP System Active</div>
+                </div>
+            </div>
+            
+            <!-- Compliance Automation Section -->
+            <div class="compliance-container" id="compliance-section">
+                <div class="compliance-header">
+                    <h2 class="compliance-title">Compliance Automation Center</h2>
+                    <div class="status-badge status-pending">Contractor - Action Required</div>
+                </div>
+                
+                <!-- Training Compliance Section -->
+                <div class="training-compliance-grid">
+                    <div class="compliance-overview">
+                        <h3>Training Compliance Status</h3>
+                        <div class="progress-section">
+                            <div class="progress-header">
+                                <span>Overall Progress</span>
+                                <span id="training-progress-text">35% Complete</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 35%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="compliance-stats">
+                            <div class="stat-card">
+                                <div class="stat-value" id="days-remaining">22</div>
+                                <div class="stat-label">Days Remaining</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="modules-completed">2/8</div>
+                                <div class="stat-label">Modules Completed</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="compliance-score">65%</div>
+                                <div class="stat-label">Compliance Score</div>
+                            </div>
+                        </div>
+                        
+                        <div class="escalation-details">
+                            <h4>Current Escalation Level: <span class="status-badge status-urgent">Day 21 - Urgent</span></h4>
+                            <p><strong>Next Escalation:</strong> Day 30 - Senior Leadership Notification</p>
+                            <p><strong>Time to Next Escalation:</strong> 9 days</p>
+                            <p><strong>Stakeholders Notified:</strong> You, Your Manager, Security Team</p>
+                        </div>
+                    </div>
+                    
+                    <div class="escalation-timeline">
+                        <h3>Escalation Timeline</h3>
+                        <div class="timeline-container">
+                            <div class="timeline-marker active">
+                                <div class="timeline-dot">D0</div>
+                                <div class="timeline-label">Assignment</div>
+                            </div>
+                            <div class="timeline-marker active">
+                                <div class="timeline-dot">D7</div>
+                                <div class="timeline-label">Friendly Reminder</div>
+                            </div>
+                            <div class="timeline-marker active">
+                                <div class="timeline-dot">D14</div>
+                                <div class="timeline-label">Manager CC</div>
+                            </div>
+                            <div class="timeline-marker current">
+                                <div class="timeline-dot">D21</div>
+                                <div class="timeline-label">Security CC</div>
+                            </div>
+                            <div class="timeline-marker future">
+                                <div class="timeline-dot">D30</div>
+                                <div class="timeline-label">Leadership</div>
+                            </div>
+                        </div>
+                        
+                        <div class="email-preview">
+                            <div class="email-header">
+                                <h4>Current Escalation Email (Day 21)</h4>
+                                <p><strong>To:</strong> alex.johnson@company.com</p>
+                                <p><strong>CC:</strong> manager@company.com, security-team@company.com</p>
+                            </div>
+                            <p><strong>Subject:</strong> URGENT: Cybersecurity Training Compliance - Day 21 Escalation</p>
+                            <p>Dear Alex,</p>
+                            <p>This is an urgent reminder that your mandatory cybersecurity training is now at Day 21 of the 30-day compliance window.</p>
+                            <p>Your current completion rate is 35% (2 of 8 modules). To avoid further escalation to senior leadership, please complete all remaining training modules within the next 9 days.</p>
+                            <p>The Security Team has been notified of this compliance status.</p>
+                            <p>Best regards,<br>DefendIQ Compliance System</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Management Section (Manager View) -->
+                <div class="team-management">
+                    <div class="compliance-header">
+                        <h3>Team Compliance Management</h3>
+                        <button class="btn btn-primary" id="send-team-reminder">
+                            <i class="fas fa-envelope"></i> Send Team Reminder
+                        </button>
+                    </div>
+                    
+                    <div class="team-stats">
+                        <div class="compliance-stats">
+                            <div class="stat-card">
+                                <div class="stat-value">8/12</div>
+                                <div class="stat-label">Fully Compliant</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">3/12</div>
+                                <div class="stat-label">In Progress</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">1/12</div>
+                                <div class="stat-label">Escalated</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <div class="member-avatar">AJ</div>
+                            <div class="member-info">
+                                <div class="member-name">Alex Johnson</div>
+                                <div class="member-role">Contractor - Security Analyst</div>
+                                <div class="status-badge status-urgent">Day 21 - Urgent</div>
+                            </div>
+                            <button class="btn btn-warning btn-remind">
+                                <i class="fas fa-bell"></i> Remind
+                            </button>
+                        </div>
+                        
+                        <div class="team-member">
+                            <div class="member-avatar">SM</div>
+                            <div class="member-info">
+                                <div class="member-name">Sarah Miller</div>
+                                <div class="member-role">Employee - Developer</div>
+                                <div class="status-badge status-completed">Compliant</div>
+                            </div>
+                        </div>
+                        
+                        <div class="team-member">
+                            <div class="member-avatar">RK</div>
+                            <div class="member-info">
+                                <div class="member-name">Robert Kim</div>
+                                <div class="member-role">Contractor - Data Analyst</div>
+                                <div class="status-badge status-pending">Day 14 - Manager CC</div>
+                            </div>
+                            <button class="btn btn-warning btn-remind">
+                                <i class="fas fa-bell"></i> Remind
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AUP Acceptance Section -->
+                <div class="aup-container" id="aup-section">
+                    <div class="compliance-header">
+                        <h3>Acceptable Use Policy (AUP)</h3>
+                        <div class="status-badge status-pending">48h Deadline</div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Attention Contractor:</strong> You must review and accept the Acceptable Use Policy within 48 hours of onboarding. Failure to do so will result in escalation to your manager and contractor representative.
+                    </div>
+                    
+                    <div class="user-compliance-status">
+                        <p><strong>User:</strong> Alex Johnson (Contractor)</p>
+                        <p><strong>Onboarding Date:</strong> <span id="onboarding-date">Nov 15, 2024</span></p>
+                        <p><strong>Deadline:</strong> <span id="aup-deadline">Nov 17, 2024</span></p>
+                        <p><strong>Time Remaining:</strong> <span id="time-remaining">36 hours</span></p>
+                        
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="aup-document">
+                        <!-- AUP content would go here -->
+                        <h3>DEFENDIQ ENTERPRISE ACCEPTABLE USE POLICY</h3>
+                        <p><strong>Effective Date:</strong> November 1, 2024</p>
+                        <!-- Simplified AUP content for demo -->
+                    </div>
+                    
+                    <div class="aup-actions">
+                        <button class="btn btn-secondary" id="decline-btn">I Do Not Accept</button>
+                        <button class="btn btn-primary" id="accept-btn">I Accept the AUP</button>
+                    </div>
+                </div>
+
+                <!-- Certificate Preview -->
+                <div class="aup-container" id="certificate-preview-section" style="display: none;">
+                    <div class="compliance-header">
+                        <h3>AUP Acceptance Certificate</h3>
+                        <div class="status-badge status-completed">Accepted</div>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <strong>Success!</strong> You have accepted the Acceptable Use Policy. Your certificate has been generated and distributed to all required stakeholders.
+                    </div>
+                    
+                    <!-- Certificate content would go here -->
+                </div>
+            </div>
+            
+            <!-- ZaraAI Chat Interface -->
+            <div class="zara-ai-container">
+                <div class="zara-header">
+                    <div class="zara-avatar">Z</div>
+                    <div class="zara-info">
+                        <h3>ZaraAI Security Assistant</h3>
+                        <p>Your AI-powered security companion & productivity partner</p>
+                    </div>
+                    <div class="zara-status">
+                        <div class="status-indicator"></div>
+                        <span>Online</span>
+                    </div>
+                </div>
+                
+                <div class="zara-chat" id="chat-messages">
+                    <div class="message zara">
+                        <div class="message-content">
+                            Hello! I'm ZaraAI, your security assistant and productivity partner. I'm here to help protect your enterprise and support your success. How can I assist you today?
+                        </div>
+                    </div>
+                    <div class="message user">
+                        <div class="message-content">
+                            Welcome back Zara! Can you give me a compliance status update?
+                        </div>
+                    </div>
+                    <div class="message zara">
+                        <div class="message-content">
+                            Certainly! I'm monitoring your compliance status. You're at Day 21 escalation for training with 35% completion. Your AUP acceptance is pending with 36 hours remaining. Would you like me to help you prioritize?
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="zara-input">
+                    <input type="text" id="user-input" placeholder="Ask ZaraAI about security, training, or productivity...">
+                    <button id="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="footer">
+                DefendIQ Enterprise with ZaraAI | © 2025 Security Systems | All rights reserved
+            </div>
+        </div>
+    </div>
+
+    <!-- AUP Acceptance Modal -->
+    <div class="modal" id="acceptance-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm AUP Acceptance</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p>By accepting the DefendIQ Enterprise Acceptable Use Policy, you acknowledge that you have read, understood, and agree to comply with all terms and conditions outlined in the policy.</p>
+            
+            <div class="form-group">
+                <label for="digital-signature">Type your full name as digital signature:</label>
+                <input type="text" id="digital-signature" class="form-control" placeholder="Enter your full name">
+            </div>
+            
+            <div class="aup-actions">
+                <button class="btn btn-secondary" id="cancel-acceptance">Cancel</button>
+                <button class="btn btn-primary" id="confirm-acceptance">Confirm Acceptance</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current application state
+        let currentState = {
+            page: 'dashboard',
+            theme: 'light',
+            userType: 'contractor', // 'contractor' or 'employee'
+            userRole: 'manager', // 'user' or 'manager'
+            compliance: {
+                aupAccepted: false,
+                onboardingDate: new Date('2024-11-15'),
+                deadline: new Date('2024-11-17'),
+                certificateId: null,
+                training: {
+                    startDate: new Date('2024-11-01'),
+                    deadline: new Date('2024-12-01'),
+                    progress: 35,
+                    modulesCompleted: 2,
+                    totalModules: 8,
+                    currentEscalation: 21, // Day of escalation
+                    nextEscalation: 30
+                }
+            },
+            securityTips: [
+                "Use strong, unique passwords for all your accounts",
+                "Enable multi-factor authentication whenever possible",
+                "Keep your software and systems updated regularly",
+                "Be cautious of phishing emails and suspicious links",
+                "Contractors must accept AUP within 48 hours of onboarding",
+                "Complete all training modules within 30 days of assignment",
+                "Report security incidents immediately to your IT department",
+                "Third-party vendors must comply with your Acceptable Use Policy"
+            ],
+            currentTipIndex: 0
+        };
+
+        // DOM elements
+        const homeLink = document.getElementById('home-link');
+        const trainingLink = document.getElementById('training-link');
+        const complianceLink = document.getElementById('compliance-link');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const backButton = document.getElementById('back-button');
+        const pageTitle = document.getElementById('page-title');
+        const heroSection = document.getElementById('hero-section');
+        const dashboardCards = document.getElementById('dashboard-cards');
+        const complianceSection = document.getElementById('compliance-section');
+        const aupSection = document.getElementById('aup-section');
+        const certificatePreviewSection = document.getElementById('certificate-preview-section');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeLabel = document.getElementById('theme-label');
+        const tipContent = document.getElementById('tip-content');
+        
+        // Training Compliance Elements
+        const trainingProgressText = document.getElementById('training-progress-text');
+        const daysRemaining = document.getElementById('days-remaining');
+        const modulesCompleted = document.getElementById('modules-completed');
+        const complianceScore = document.getElementById('compliance-score');
+        const sendTeamReminder = document.getElementById('send-team-reminder');
+        
+        // AUP Elements
+        const acceptBtn = document.getElementById('accept-btn');
+        const declineBtn = document.getElementById('decline-btn');
+        const acceptanceModal = document.getElementById('acceptance-modal');
+        const closeModal = document.querySelector('.close-modal');
+        const cancelAcceptance = document.getElementById('cancel-acceptance');
+        const confirmAcceptance = document.getElementById('confirm-acceptance');
+        const digitalSignature = document.getElementById('digital-signature');
+        const onboardingDate = document.getElementById('onboarding-date');
+        const aupDeadline = document.getElementById('aup-deadline');
+        const timeRemaining = document.getElementById('time-remaining');
+
+        // ZaraAI Chat Functionality
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        
+        // Enhanced ZaraAI responses with compliance focus
+        const zaraResponses = {
+            general: [
+                "I'm analyzing your security systems now. Everything appears to be running smoothly with no critical issues detected.",
+                "Based on my analysis, I recommend reviewing your firewall rules to ensure optimal protection against emerging threats.",
+                "I've updated the threat intelligence database with the latest signatures. Your systems are now protected against 3 new malware variants.",
+                "I'm currently monitoring 15 active security controls. All are operating within expected parameters."
+            ],
+            compliance: [
+                "I notice you're at Day 21 escalation for training completion. Would you like me to help you create a study plan?",
+                "Your AUP acceptance is pending with limited time remaining. This should be your top priority today.",
+                "Based on your current progress rate, you need to complete 1 module every 3 days to meet the 30-day deadline.",
+                "I can see 3 team members are approaching escalation points. Would you like me to send personalized reminders?"
+            ],
+            escalation: [
+                "At Day 21, the Security Team has been notified. Completing 2 modules this week would get you back on track.",
+                "The Day 30 escalation to senior leadership can be avoided if you maintain a consistent training pace.",
+                "I recommend focusing on the 'Phishing Awareness' and 'Incident Reporting' modules first - they're highest priority for your role.",
+                "Your manager has been copied on all escalation emails. They may reach out directly to offer support."
+            ]
+        };
+        
+        // Function to add a message to the chat
+        function addMessage(message, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'zara'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = message;
+            
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Function to get ZaraAI response
+        function getZaraResponse(userMessage = '') {
+            const lowerMessage = userMessage.toLowerCase();
+            
+            // Check for specific triggers
+            if (lowerMessage.includes('compliance') || lowerMessage.includes('training') || lowerMessage.includes('escalation')) {
+                const responses = [...zaraResponses.compliance, ...zaraResponses.escalation];
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+            
+            if (lowerMessage.includes('aup') || lowerMessage.includes('acceptance')) {
+                if (currentState.userType === 'contractor' && !currentState.compliance.aupAccepted) {
+                    return "I see you're a contractor with pending AUP acceptance. The 48-hour deadline is active. Would you like me to take you to the compliance section to review and accept the policy?";
+                } else if (currentState.userType === 'contractor' && currentState.compliance.aupAccepted) {
+                    return "Great! I can see you've already accepted the AUP. Your certificate has been generated and distributed to all stakeholders.";
+                }
+            }
+            
+            if (lowerMessage.includes('team') || lowerMessage.includes('manager')) {
+                if (currentState.userRole === 'manager') {
+                    return "I can see 3 team members need attention. Would you like me to send bulk reminders or generate a compliance report for your leadership team?";
+                } else {
+                    return "Your manager has been notified of your current escalation status. They may reach out to offer support with your training completion.";
+                }
+            }
+            
+            // Default random response
+            const generalResponses = zaraResponses.general;
+            return generalResponses[Math.floor(Math.random() * generalResponses.length)];
+        }
+        
+        // Send message function
+        function sendMessage() {
+            const message = userInput.value.trim();
+            
+            if (message) {
+                // Add user message
+                addMessage(message, true);
+                
+                // Clear input
+                userInput.value = '';
+                
+                // Simulate ZaraAI thinking
+                setTimeout(() => {
+                    // Add ZaraAI response
+                    addMessage(getZaraResponse(message), false);
+                }, 1000);
+            }
+        }
+
+        // Navigation functions
+        function showDashboard() {
+            currentState.page = 'dashboard';
+            pageTitle.textContent = 'Security Dashboard';
+            heroSection.style.display = 'block';
+            dashboardCards.style.display = 'grid';
+            complianceSection.style.display = 'none';
+            backButton.style.display = 'none';
+        }
+
+        function showCompliance() {
+            currentState.page = 'compliance';
+            pageTitle.textContent = 'Compliance Automation';
+            heroSection.style.display = 'none';
+            dashboardCards.style.display = 'none';
+            complianceSection.style.display = 'block';
+            backButton.style.display = 'inline-flex';
+            
+            // Update training compliance data
+            updateTrainingComplianceUI();
+            
+            // Show appropriate section based on user type and AUP status
+            if (currentState.userType === 'contractor' && !currentState.compliance.aupAccepted) {
+                aupSection.style.display = 'block';
+                certificatePreviewSection.style.display = 'none';
+                initializeCountdown();
+            } else if (currentState.userType === 'contractor' && currentState.compliance.aupAccepted) {
+                aupSection.style.display = 'none';
+                certificatePreviewSection.style.display = 'block';
+            }
+            
+            // Show/hide team management based on role
+            const teamManagement = document.querySelector('.team-management');
+            if (currentState.userRole === 'manager') {
+                teamManagement.style.display = 'block';
+            } else {
+                teamManagement.style.display = 'none';
+            }
+        }
+
+        // Training Compliance Functions
+        function updateTrainingComplianceUI() {
+            const training = currentState.compliance.training;
+            
+            // Update progress text and bar
+            trainingProgressText.textContent = `${training.progress}% Complete`;
+            document.querySelector('#compliance-section .progress').style.width = `${training.progress}%`;
+            
+            // Calculate days remaining
+            const today = new Date();
+            const timeDiff = training.deadline - today;
+            const daysRemainingCount = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            daysRemaining.textContent = Math.max(0, daysRemainingCount);
+            
+            // Update modules completed
+            modulesCompleted.textContent = `${training.modulesCompleted}/${training.totalModules}`;
+            
+            // Calculate compliance score (simplified)
+            const score = Math.min(100, Math.round((training.progress * 0.7) + (daysRemainingCount > 0 ? 30 : 0)));
+            complianceScore.textContent = `${score}%`;
+        }
+
+        // AUP Acceptance functions
+        function initializeCountdown() {
+            const now = new Date();
+            const timeRemainingMs = currentState.compliance.deadline - now;
+            
+            if (timeRemainingMs > 0) {
+                const hours = Math.floor(timeRemainingMs / (1000 * 60 * 60));
+                const minutes = Math.floor((timeRemainingMs % (1000 * 60 * 60)) / (1000 * 60));
+                timeRemaining.textContent = `${hours}h ${minutes}m`;
+            } else {
+                timeRemaining.textContent = 'OVERDUE';
+                timeRemaining.style.color = 'var(--danger)';
+                document.querySelector('.status-badge').className = 'status-badge status-overdue';
+                document.querySelector('.status-badge').textContent = 'OVERDUE - Escalated';
+                
+                // Show escalation message
+                const alert = document.querySelector('.alert-warning');
+                alert.innerHTML = '<strong>ESCALATION NOTICE:</strong> AUP acceptance is overdue. This has been escalated to your Manager and Contractor Representative. Please accept immediately.';
+                alert.style.backgroundColor = '#fee2e2';
+                alert.style.borderLeftColor = 'var(--danger)';
+            }
+        }
+
+        function simulateAupAcceptance(signature) {
+            // Show loading state
+            confirmAcceptance.textContent = 'Processing...';
+            confirmAcceptance.disabled = true;
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Update state
+                currentState.compliance.aupAccepted = true;
+                currentState.compliance.certificateId = 'DIQ-AUP-2024-' + Math.floor(100 + Math.random() * 900);
+                
+                // Update UI to show acceptance
+                acceptanceModal.style.display = 'none';
+                aupSection.style.display = 'none';
+                certificatePreviewSection.style.display = 'block';
+                
+                // Update dashboard compliance status
+                document.querySelector('.dashboard-cards .card:nth-child(4) .card-value').textContent = '85%';
+                
+                // Show success message
+                addMessage(`AUP successfully accepted! Your certificate ${currentState.compliance.certificateId} has been distributed to:
+- You (email + download)
+- Your Manager (email)
+- Contractor Representative (email)`, false);
+                
+                // Reset modal
+                confirmAcceptance.textContent = 'Confirm Acceptance';
+                confirmAcceptance.disabled = false;
+                digitalSignature.value = '';
+            }, 1500);
+        }
+
+        // Team Management Functions
+        function sendTeamReminderHandler() {
+            alert('Team reminder sent! All non-compliant team members will receive a personalized reminder email.');
+            addMessage("I've sent reminders to all team members who are behind on compliance. Would you like me to generate a compliance report for your next leadership meeting?", false);
+        }
+
+        function sendIndividualReminderHandler(button) {
+            const memberCard = button.closest('.team-member');
+            const memberName = memberCard.querySelector('.member-name').textContent;
+            alert(`Reminder sent to ${memberName}`);
+            addMessage(`I've sent a personalized reminder to ${memberName}. They're currently at ${memberCard.querySelector('.status-badge').textContent}.`, false);
+        }
+
+        // Theme toggle function
+        function toggleTheme() {
+            if (currentState.theme === 'light') {
+                currentState.theme = 'dark';
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> <span id="theme-label">Light Mode</span>';
+                themeLabel.textContent = 'Light Mode';
+            } else {
+                currentState.theme = 'light';
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> <span id="theme-label">Dark Mode</span>';
+                themeLabel.textContent = 'Dark Mode';
+            }
+            
+            // Update the theme label reference
+            const newThemeLabel = document.getElementById('theme-label');
+            if (newThemeLabel) {
+                themeLabel = newThemeLabel;
+            }
+        }
+
+        // Security tips rotation
+        function rotateSecurityTip() {
+            currentState.currentTipIndex = (currentState.currentTipIndex + 1) % currentState.securityTips.length;
+            tipContent.textContent = currentState.securityTips[currentState.currentTipIndex];
+        }
+
+        // Back button functionality
+        function goBack() {
+            switch(currentState.page) {
+                case 'compliance':
+                    showDashboard();
+                    break;
+                default:
+                    showDashboard();
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial dates
+            onboardingDate.textContent = currentState.compliance.onboardingDate.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            aupDeadline.textContent = currentState.compliance.deadline.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Navigation
+            homeLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showDashboard();
+            });
+            
+            complianceLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showCompliance();
+            });
+            
+            // Back button
+            backButton.addEventListener('click', goBack);
+            
+            // Refresh button
+            refreshBtn.addEventListener('click', function() {
+                // In a real app, this would refresh data from the server
+                const originalText = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = '<i class="fas fa-check"></i> Refreshed';
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalText;
+                }, 2000);
+            });
+            
+            // Team Management
+            sendTeamReminder.addEventListener('click', sendTeamReminderHandler);
+            document.querySelectorAll('.btn-remind').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    sendIndividualReminderHandler(this);
+                });
+            });
+            
+            // AUP Acceptance
+            acceptBtn.addEventListener('click', () => {
+                acceptanceModal.style.display = 'flex';
+            });
+            
+            declineBtn.addEventListener('click', () => {
+                if(confirm('Declining the AUP will result in immediate escalation to your manager and contractor representative. Are you sure you want to decline?')) {
+                    addMessage('Your decision has been recorded and escalated. Please contact your manager for further instructions.', false);
+                }
+            });
+            
+            closeModal.addEventListener('click', () => {
+                acceptanceModal.style.display = 'none';
+            });
+            
+            cancelAcceptance.addEventListener('click', () => {
+                acceptanceModal.style.display = 'none';
+            });
+            
+            confirmAcceptance.addEventListener('click', () => {
+                if(digitalSignature.value.trim() === '') {
+                    alert('Please enter your full name as a digital signature.');
+                    return;
+                }
+                
+                // Simulate AUP acceptance process
+                simulateAupAcceptance(digitalSignature.value.trim());
+            });
+            
+            // ZaraAI chat
+            sendBtn.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Security tips rotation
+            setInterval(rotateSecurityTip, 5000);
+            
+            // Initialize countdown if needed
+            if (currentState.userType === 'contractor' && !currentState.compliance.aupAccepted) {
+                initializeCountdown();
+            }
+            
+            // Update training compliance UI
+            updateTrainingComplianceUI();
+            
+            // Welcome message with compliance focus
+            setTimeout(() => {
+                if (currentState.userType === 'contractor') {
+                    if (!currentState.compliance.aupAccepted) {
+                        addMessage("I notice you have a pending AUP acceptance with a 48-hour deadline and training at Day 21 escalation. Would you like me to help you prioritize these compliance items?", false);
+                    } else {
+                        addMessage("Your AUP is accepted! I see your training is at Day 21 escalation. Would you like me to create a study plan to help you meet the 30-day deadline?", false);
+                    }
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

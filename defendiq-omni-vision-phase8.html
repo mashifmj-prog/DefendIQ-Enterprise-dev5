@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DefendIQ Enterprise | OmniVision Threat Monitoring</title>
+    <meta name="theme-color" content="#1a237e">
+    <meta name="description" content="DefendIQ Enterprise - OmniVision 360° Threat Visibility & Real-time Monitoring">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --vision-primary: #1a237e;
+            --vision-secondary: #303f9f;
+            --vision-accent: #5c6bc0;
+            --monitoring: #00897b;
+            --threat-critical: #f44336;
+            --threat-high: #ff9800;
+            --threat-medium: #ffeb3b;
+            --threat-low: #4caf50;
+            --success: #43a047;
+            --warning: #ffb300;
+            --danger: #e53935;
+            --light: #f5f5f5;
+            --dark: #212121;
+            --gray: #9e9e9e;
+            --bg-color: #0a0f1f;
+            --text-color: #e3f2fd;
+            --card-bg: #1a237e;
+            --sidebar-bg: linear-gradient(to bottom, #1a237e, #000051);
+            --header-bg: #1a237e;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8f9fa;
+            --text-color: #1a237e;
+            --card-bg: white;
+            --sidebar-bg: linear-gradient(to bottom, #1a237e, #303f9f);
+            --header-bg: white;
+            --light: #e3f2fd;
+            --dark: #1a237e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .radar-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(48, 63, 159, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(92, 107, 192, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(26, 35, 126, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .radar-sweep {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100vmax;
+            height: 100vmax;
+            background: conic-gradient(transparent 330deg, rgba(92, 107, 192, 0.1) 360deg);
+            transform: translate(-50%, -50%);
+            animation: radarSweep 4s linear infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 100;
+            border-right: 1px solid rgba(92, 107, 192, 0.3);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(92, 107, 192, 0.3);
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .logo-iq {
+            color: var(--vision-accent);
+        }
+        
+        .phase-badge {
+            background: linear-gradient(135deg, var(--vision-accent), #7986cb);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: rgba(92, 107, 192, 0.2);
+            border-left: 4px solid var(--vision-accent);
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: rgba(92, 107, 192, 0.1);
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .menu-badge {
+            background: var(--vision-accent);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .alert-pulse {
+            animation: alertPulse 2s infinite;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background: transparent;
+            position: relative;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--header-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(92, 107, 192, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--vision-primary), var(--vision-accent), var(--vision-primary));
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .title-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--vision-primary), var(--vision-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .title-badge {
+            background: linear-gradient(135deg, var(--vision-accent), #7986cb);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--vision-primary), var(--vision-secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 35, 126, 0.4);
+        }
+        
+        .btn-monitoring {
+            background: linear-gradient(135deg, var(--monitoring), #00bcd4);
+            color: white;
+        }
+        
+        .btn-alert {
+            background: linear-gradient(135deg, var(--threat-critical), #d32f2f);
+            color: white;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--vision-primary), var(--vision-accent));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        /* Threat Overview */
+        .threat-overview {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .threat-map {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(92, 107, 192, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .threat-map::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--vision-accent), #7986cb);
+        }
+        
+        .map-container {
+            height: 300px;
+            background: #0d1b36;
+            border-radius: 12px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(92, 107, 192, 0.3);
+        }
+        
+        .threat-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: threatPulse 2s infinite;
+        }
+        
+        .threat-critical { background: var(--threat-critical); }
+        .threat-high { background: var(--threat-high); }
+        .threat-medium { background: var(--threat-medium); }
+        .threat-low { background: var(--threat-low); }
+        
+        .threat-stats {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(92, 107, 192, 0.3);
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(92, 107, 192, 0.2);
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .stat-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .stat-details p {
+            font-size: 12px;
+            color: var(--vision-accent);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        /* Real-time Monitoring */
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .monitor-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(92, 107, 192, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .monitor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--monitoring), #00bcd4);
+        }
+        
+        .monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .monitor-title {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .monitor-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: var(--success);
+            color: white;
+        }
+        
+        .status-warning {
+            background: var(--warning);
+            color: black;
+        }
+        
+        .activity-feed {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(92, 107, 192, 0.2);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: var(--vision-accent);
+        }
+        
+        /* Threat Intelligence */
+        .threat-intel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(92, 107, 192, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .intel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .intel-card {
+            background: rgba(92, 107, 192, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(92, 107, 192, 0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .intel-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--vision-accent);
+        }
+        
+        .intel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .intel-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .intel-severity {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .intel-desc {
+            font-size: 13px;
+            color: var(--vision-accent);
+            margin-bottom: 15px;
+        }
+        
+        .intel-stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .intel-stat {
+            text-align: center;
+        }
+        
+        .intel-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        
+        .intel-label {
+            font-size: 11px;
+            color: var(--vision-accent);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        /* Network Visualization */
+        .network-viz {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(92, 107, 192, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .viz-container {
+            height: 300px;
+            background: #0d1b36;
+            border-radius: 12px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(92, 107, 192, 0.3);
+        }
+        
+        .node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .node-core { background: linear-gradient(135deg, var(--vision-primary), var(--vision-secondary)); }
+        .node-server { background: linear-gradient(135deg, var(--monitoring), #00bcd4); }
+        .node-user { background: linear-gradient(135deg, var(--success), #66bb6a); }
+        .node-threat { background: linear-gradient(135deg, var(--threat-critical), #d32f2f); }
+        
+        .connection {
+            position: absolute;
+            height: 2px;
+            background: rgba(92, 107, 192, 0.5);
+            transform-origin: 0 0;
+        }
+        
+        /* Animations */
+        @keyframes radarSweep {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        @keyframes alertPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes threatPulse {
+            0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+        }
+        
+        @keyframes nodePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: nodePulse 2s infinite;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .threat-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .monitoring-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .intel-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="radar-bg"></div>
+    <div class="radar-sweep"></div>
+    
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <div class="logo-text">Defend<span class="logo-iq">IQ</span> Enterprise</div>
+                </div>
+                <div class="phase-badge">OmniVision v8.0</div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="#">
+                    <span><i class="fas fa-radar"></i> Threat Radar</span>
+                    <span class="menu-badge alert-pulse">LIVE</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-eye"></i> Real-time Monitor</span>
+                    <span class="menu-badge">24/7</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-brain"></i> Threat Intel</span>
+                    <span class="menu-badge">1.2K</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-network-wired"></i> Network Map</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-bell"></i> Alerts Center</span>
+                    <span class="menu-badge">42</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-atom"></i> Quantum Shield</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-cog"></i> Vision Settings</span>
+                </a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="page-title">
+                    <div class="title-icon">
+                        <i class="fas fa-radar"></i>
+                    </div>
+                    <div>
+                        OmniVision Threat Monitoring
+                        <div class="title-badge">360° Real-time Visibility</div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-monitoring" id="full-scan">
+                        <i class="fas fa-search"></i> Full System Scan
+                    </button>
+                    <button class="btn btn-alert" id="view-alerts">
+                        <i class="fas fa-bell"></i> View Alerts (42)
+                    </button>
+                    <button class="btn btn-primary" id="export-report">
+                        <i class="fas fa-download"></i> Export Report
+                    </button>
+                    <div class="user-info">
+                        <div class="user-avatar">OV</div>
+                        <div>Security Analyst</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Threat Overview -->
+            <div class="threat-overview">
+                <div class="threat-map">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-globe-americas"></i>
+                            Global Threat Map
+                        </div>
+                        <button class="btn btn-primary" id="refresh-map">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="map-container" id="threat-map">
+                        <!-- Threat markers will be added dynamically -->
+                    </div>
+                </div>
+                
+                <div class="threat-stats">
+                    <div class="stat-item">
+                        <div class="stat-info">
+                            <div class="stat-icon" style="background: var(--threat-critical);">
+                                <i class="fas fa-skull-crossbones"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>Critical Threats</h4>
+                                <p>Immediate action required</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--threat-critical);">12</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-info">
+                            <div class="stat-icon" style="background: var(--threat-high);">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>High Severity</h4>
+                                <p>Investigation needed</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--threat-high);">28</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-info">
+                            <div class="stat-icon" style="background: var(--threat-medium);">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>Medium Risk</h4>
+                                <p>Monitor closely</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--threat-medium);">156</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-info">
+                            <div class="stat-icon" style="background: var(--threat-low);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>Low Risk</h4>
+                                <p>Routine monitoring</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--threat-low);">892</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Real-time Monitoring -->
+            <div class="monitoring-grid">
+                <div class="monitor-card">
+                    <div class="monitor-header">
+                        <div class="monitor-title">
+                            <i class="fas fa-server"></i>
+                            System Activity
+                        </div>
+                        <div class="monitor-status status-active">LIVE</div>
+                    </div>
+                    <div class="activity-feed" id="system-activity">
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--threat-critical);">
+                                <i class="fas fa-bug"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Malware detected on endpoint US-WST-42</div>
+                                <div class="activity-time">2 seconds ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--threat-high);">
+                                <i class="fas fa-user-secret"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Suspicious login attempt from unknown location</div>
+                                <div class="activity-time">45 seconds ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--monitoring);">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Automated threat blocked - Phishing attempt</div>
+                                <div class="activity-time">1 minute ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--threat-medium);">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Unusual network traffic pattern detected</div>
+                                <div class="activity-time">3 minutes ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="monitor-card">
+                    <div class="monitor-header">
+                        <div class="monitor-title">
+                            <i class="fas fa-broadcast-tower"></i>
+                            Network Monitoring
+                        </div>
+                        <div class="monitor-status status-active">LIVE</div>
+                    </div>
+                    <div class="activity-feed" id="network-activity">
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--success);">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">All firewalls operating normally</div>
+                                <div class="activity-time">5 minutes ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--monitoring);">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">IDS rules updated with latest signatures</div>
+                                <div class="activity-time">12 minutes ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--threat-low);">
+                                <i class="fas fa-exclamation"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Minor DDoS mitigation activated</div>
+                                <div class="activity-time">18 minutes ago</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--success);">
+                                <i class="fas fa-shield-virus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">All endpoints running latest AV definitions</div>
+                                <div class="activity-time">25 minutes ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Threat Intelligence -->
+            <div class="threat-intel">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-brain"></i>
+                        Live Threat Intelligence
+                    </div>
+                    <button class="btn btn-primary" id="update-intel">
+                        <i class="fas fa-cloud-download-alt"></i> Update Intel
+                    </button>
+                </div>
+                
+                <div class="intel-grid">
+                    <div class="intel-card">
+                        <div class="intel-header">
+                            <div class="intel-title">Phishing Campaign</div>
+                            <div class="intel-severity" style="background: var(--threat-high); color: black;">ACTIVE</div>
+                        </div>
+                        <div class="intel-desc">Targeted phishing campaign impersonating corporate IT</div>
+                        <div class="intel-stats">
+                            <div class="intel-stat">
+                                <div class="intel-value">1.2K</div>
+                                <div class="intel-label">Emails Blocked</div>
+                            </div>
+                            <div class="intel-stat">
+                                <div class="intel-value">98%</div>
+                                <div class="intel-label">Detection Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="intel-card">
+                        <div class="intel-header">
+                            <div class="intel-title">Ransomware Group</div>
+                            <div class="intel-severity" style="background: var(--threat-critical); color: white;">CRITICAL</div>
+                        </div>
+                        <div class="intel-desc">New ransomware variant targeting financial sector</div>
+                        <div class="intel-stats">
+                            <div class="intel-stat">
+                                <div class="intel-value">24</div>
+                                <div class="intel-label">Organizations</div>
+                            </div>
+                            <div class="intel-stat">
+                                <div class="intel-value">100%</div>
+                                <div class="intel-label">Protected</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="intel-card">
+                        <div class="intel-header">
+                            <div class="intel-title">Zero-Day Exploit</div>
+                            <div class="intel-severity" style="background: var(--threat-medium); color: black;">MONITOR</div>
+                        </div>
+                        <div class="intel-desc">New vulnerability in web application framework</div>
+                        <div class="intel-stats">
+                            <div class="intel-stat">
+                                <div class="intel-value">CVE-2024-</div>
+                                <div class="intel-label">Identifier</div>
+                            </div>
+                            <div class="intel-stat">
+                                <div class="intel-value">8.2</div>
+                                <div class="intel-label">CVSS Score</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Network Visualization -->
+            <div class="network-viz">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-network-wired"></i>
+                        Network Infrastructure Map
+                    </div>
+                    <button class="btn btn-primary" id="auto-layout">
+                        <i class="fas fa-project-diagram"></i> Auto Layout
+                    </button>
+                </div>
+                <div class="viz-container" id="network-map">
+                    <!-- Network nodes and connections will be added dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // OmniVision Threat Monitoring System
+        const omniVision = {
+            // Current state
+            state: {
+                threats: [],
+                activities: [],
+                networkNodes: [],
+                isScanning: false
+            },
+            
+            // Initialize system
+            initialize: function() {
+                this.generateThreatMap();
+                this.generateNetworkMap();
+                this.bindEvents();
+                this.startLiveUpdates();
+            },
+            
+            // Generate threat map with random threats
+            generateThreatMap: function() {
+                const map = document.getElementById('threat-map');
+                const threats = [
+                    { type: 'critical', x: 25, y: 30 },
+                    { type: 'high', x: 60, y: 45 },
+                    { type: 'medium', x: 40, y: 70 },
+                    { type: 'low', x: 75, y: 25 },
+                    { type: 'critical', x: 15, y: 60 },
+                    { type: 'high', x: 80, y: 65 },
+                    { type: 'medium', x: 50, y: 35 },
+                    { type: 'low', x: 35, y: 50 },
+                    { type: 'critical', x: 70, y: 40 },
+                    { type: 'high', x: 45, y: 20 }
+                ];
+                
+                threats.forEach(threat => {
+                    const marker = document.createElement('div');
+                    marker.className = `threat-marker threat-${threat.type}`;
+                    marker.style.left = `${threat.x}%`;
+                    marker.style.top = `${threat.y}%`;
+                    
+                    // Add animation delay for variety
+                    marker.style.animationDelay = `${Math.random() * 2}s`;
+                    
+                    map.appendChild(marker);
+                });
+            },
+            
+            // Generate network visualization
+            generateNetworkMap: function() {
+                const container = document.getElementById('network-map');
+                
+                // Define nodes
+                const nodes = [
+                    { id: 'core', type: 'core', x: 50, y: 50, label: 'CORE' },
+                    { id: 'server1', type: 'server', x: 20, y: 30, label: 'WEB\nSRV' },
+                    { id: 'server2', type: 'server', x: 80, y: 30, label: 'DB\nSRV' },
+                    { id: 'user1', type: 'user', x: 15, y: 70, label: 'US\nWEST' },
+                    { id: 'user2', type: 'user', x: 85, y: 70, label: 'US\nEAST' },
+                    { id: 'threat1', type: 'threat', x: 10, y: 20, label: 'THREAT' }
+                ];
+                
+                // Define connections
+                const connections = [
+                    { from: 'core', to: 'server1' },
+                    { from: 'core', to: 'server2' },
+                    { from: 'core', to: 'user1' },
+                    { from: 'core', to: 'user2' },
+                    { from: 'threat1', to: 'server1' }
+                ];
+                
+                // Create connections first (so they appear behind nodes)
+                connections.forEach(conn => {
+                    const fromNode = nodes.find(n => n.id === conn.from);
+                    const toNode = nodes.find(n => n.id === conn.to);
+                    
+                    if (fromNode && toNode) {
+                        const connection = document.createElement('div');
+                        connection.className = 'connection';
+                        
+                        const dx = toNode.x - fromNode.x;
+                        const dy = toNode.y - fromNode.y;
+                        const length = Math.sqrt(dx * dx + dy * dy);
+                        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                        
+                        connection.style.width = `${length}%`;
+                        connection.style.left = `${fromNode.x}%`;
+                        connection.style.top = `${fromNode.y}%`;
+                        connection.style.transform = `rotate(${angle}deg)`;
+                        
+                        // Threat connections are red
+                        if (conn.from === 'threat1' || conn.to === 'threat1') {
+                            connection.style.background = 'var(--threat-critical)';
+                            connection.style.animation = 'alertPulse 1s infinite';
+                        }
+                        
+                        container.appendChild(connection);
+                    }
+                });
+                
+                // Create nodes
+                nodes.forEach(node => {
+                    const nodeEl = document.createElement('div');
+                    nodeEl.className = `node node-${node.type}`;
+                    nodeEl.style.left = `${node.x}%`;
+                    nodeEl.style.top = `${node.y}%`;
+                    nodeEl.textContent = node.label;
+                    
+                    // Add pulse animation to threat node
+                    if (node.type === 'threat') {
+                        nodeEl.classList.add('pulse');
+                    }
+                    
+                    container.appendChild(nodeEl);
+                });
+            },
+            
+            // Bind event listeners
+            bindEvents: function() {
+                document.getElementById('full-scan').addEventListener('click', () => {
+                    this.runFullSystemScan();
+                });
+                
+                document.getElementById('view-alerts').addEventListener('click', () => {
+                    this.showAlertsCenter();
+                });
+                
+                document.getElementById('export-report').addEventListener('click', () => {
+                    this.exportThreatReport();
+                });
+                
+                document.getElementById('refresh-map').addEventListener('click', () => {
+                    this.refreshThreatMap();
+                });
+                
+                document.getElementById('update-intel').addEventListener('click', () => {
+                    this.updateThreatIntel();
+                });
+                
+                document.getElementById('auto-layout').addEventListener('click', () => {
+                    this.autoLayoutNetwork();
+                });
+            },
+            
+            // Run full system scan
+            runFullSystemScan: function() {
+                if (this.state.isScanning) return;
+                
+                this.state.isScanning = true;
+                const btn = document.getElementById('full-scan');
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning...';
+                btn.disabled = true;
+                
+                // Simulate scan process
+                let progress = 0;
+                const scanInterval = setInterval(() => {
+                    progress += 10;
+                    
+                    if (progress >= 100) {
+                        clearInterval(scanInterval);
+                        this.state.isScanning = false;
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        
+                        this.showNotification('Full system scan completed. 3 new threats detected.', 'success');
+                        this.addNewThreats();
+                    }
+                }, 300);
+            },
+            
+            // Show alerts center
+            showAlertsCenter: function() {
+                this.showNotification('Opening Alerts Center with 42 active security alerts', 'info');
+            },
+            
+            // Export threat report
+            exportThreatReport: function() {
+                this.showNotification('Generating and downloading comprehensive threat report...', 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('Threat report exported successfully (PDF, 2.4MB)', 'success');
+                }, 2000);
+            },
+            
+            // Refresh threat map
+            refreshThreatMap: function() {
+                const map = document.getElementById('threat-map');
+                map.innerHTML = '';
+                this.generateThreatMap();
+                this.showNotification('Threat map refreshed with latest intelligence', 'info');
+            },
+            
+            // Update threat intelligence
+            updateThreatIntel: function() {
+                this.showNotification('Updating threat intelligence from global feeds...', 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('Threat intelligence updated with 124 new indicators', 'success');
+                }, 1500);
+            },
+            
+            // Auto-layout network
+            autoLayoutNetwork: function() {
+                const container = document.getElementById('network-map');
+                container.innerHTML = '';
+                this.generateNetworkMap();
+                this.showNotification('Network map auto-layout applied', 'info');
+            },
+            
+            // Add new threats (simulated)
+            addNewThreats: function() {
+                const map = document.getElementById('threat-map');
+                const newThreats = [
+                    { type: 'high', x: 55, y: 15 },
+                    { type: 'medium', x: 30, y: 80 },
+                    { type: 'critical', x: 85, y: 55 }
+                ];
+                
+                newThreats.forEach(threat => {
+                    const marker = document.createElement('div');
+                    marker.className = `threat-marker threat-${threat.type}`;
+                    marker.style.left = `${threat.x}%`;
+                    marker.style.top = `${threat.y}%`;
+                    marker.style.animation = 'threatPulse 1s infinite';
+                    
+                    map.appendChild(marker);
+                });
+            },
+            
+            // Start live updates for activity feeds
+            startLiveUpdates: function() {
+                // Simulate live activity updates
+                setInterval(() => {
+                    this.addLiveActivity();
+                }, 10000); // Every 10 seconds
+            },
+            
+            // Add live activity to feeds
+            addLiveActivity: function() {
+                const activities = [
+                    {
+                        feed: 'system-activity',
+                        icon: 'fas fa-shield-alt',
+                        iconBg: 'var(--monitoring)',
+                        title: 'Automated security policy enforcement',
+                        time: 'Just now'
+                    },
+                    {
+                        feed: 'network-activity',
+                        icon: 'fas fa-chart-line',
+                        iconBg: 'var(--success)',
+                        title: 'Network traffic within normal parameters',
+                        time: 'Just now'
+                    }
+                ];
+                
+                activities.forEach(activity => {
+                    const feed = document.getElementById(activity.feed);
+                    const activityItem = document.createElement('div');
+                    activityItem.className = 'activity-item';
+                    activityItem.innerHTML = `
+                        <div class="activity-icon" style="background: ${activity.iconBg};">
+                            <i class="${activity.icon}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">${activity.title}</div>
+                            <div class="activity-time">${activity.time}</div>
+                        </div>
+                    `;
+                    
+                    // Add to top of feed
+                    feed.insertBefore(activityItem, feed.firstChild);
+                    
+                    // Remove oldest item if more than 6 items
+                    if (feed.children.length > 6) {
+                        feed.removeChild(feed.lastChild);
+                    }
+                });
+            },
+            
+            // Notification system
+            showNotification: function(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `omni-notification notification-${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                        ${message}
+                    </div>
+                `;
+                
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#43a047' : type === 'warning' ? '#ffb300' : '#1976d2'};
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    animation: slideInRight 0.3s ease-out;
+                    max-width: 400px;
+                    border-left: 4px solid ${type === 'success' ? '#2e7d32' : type === 'warning' ? '#f57c00' : '#1565c0'};
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease-in';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 4000);
+            }
+        };
+
+        // Initialize OmniVision when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            omniVision.initialize();
+            
+            // Add CSS for notifications
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                
+                .omni-notification {
+                    font-weight: 600;
+                    backdrop-filter: blur(10px);
+                }
+                
+                .notification-content i {
+                    margin-right: 10px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                console.log('OmniVision PWA Service Worker would be registered here');
+            });
+        }
+    </script>
+</body>
+</html>

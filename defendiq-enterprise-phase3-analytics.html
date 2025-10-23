@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DefendIQ Enterprise | Analytics & Reporting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --primary-light: #534bae;
+            --primary-dark: #000051;
+            --secondary: #00b0ff;
+            --accent: #ff4081;
+            --light: #f5f5f5;
+            --dark: #212121;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --gray: #9e9e9e;
+            --bg-color: #f0f2f5;
+            --text-color: #212121;
+            --card-bg: white;
+            --sidebar-bg: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+            --header-bg: white;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #f5f5f5;
+            --card-bg: #1e1e1e;
+            --sidebar-bg: linear-gradient(to bottom, #0d0d3d, #000022);
+            --header-bg: #2d2d2d;
+            --light: #2d2d2d;
+            --gray: #aaaaaa;
+            --dark: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .logo-iq {
+            color: var(--secondary);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 10px 20px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background: var(--header-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .back-button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-right: 15px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #0091ea;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        /* Theme Toggle */
+        .theme-toggle-container {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 10;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-bg);
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            border: 1px solid var(--light);
+        }
+        
+        .theme-toggle i {
+            font-size: 18px;
+            color: var(--primary);
+        }
+        
+        .theme-toggle span {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        /* ANALYTICS DASHBOARD STYLES */
+        .analytics-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .analytics-title {
+            font-size: 24px;
+            color: var(--primary);
+        }
+        
+        .analytics-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid var(--light);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        /* KPI Metrics Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kpi-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--secondary);
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .kpi-label {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .kpi-change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .positive {
+            color: var(--success);
+        }
+        
+        .negative {
+            color: var(--danger);
+        }
+        
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-placeholder {
+            height: 300px;
+            background: var(--card-bg);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        /* Risk Scoring */
+        .risk-scoring {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .risk-meter {
+            height: 20px;
+            background: linear-gradient(to right, var(--success), var(--warning), var(--danger));
+            border-radius: 10px;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .risk-indicator {
+            position: absolute;
+            top: -5px;
+            width: 30px;
+            height: 30px;
+            background: var(--card-bg);
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .risk-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* Heat Map */
+        .heatmap-container {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin: 15px 0;
+        }
+        
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+        
+        .heatmap-legend {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        /* Report Builder */
+        .report-builder {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .report-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .report-option {
+            background: var(--card-bg);
+            border: 1px solid var(--light);
+            border-radius: 4px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .report-option:hover {
+            border-color: var(--secondary);
+            background: rgba(0, 176, 255, 0.05);
+        }
+        
+        .report-option.selected {
+            border-color: var(--secondary);
+            background: rgba(0, 176, 255, 0.1);
+        }
+        
+        /* Executive Dashboard */
+        .executive-dashboard {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .executive-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .executive-metric {
+            text-align: center;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 8px;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 5px 0;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* Predictive Analytics */
+        .predictive-analytics {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .prediction-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .prediction-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .prediction-confidence {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .card-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .slogan {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+        
+        .slogan-part1 {
+            color: #ffffff;
+        }
+        
+        .slogan-part2 {
+            color: var(--secondary);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn-hero {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        /* Security Tips Banner */
+        .tips-banner {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--secondary);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .tip-content {
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* ZaraAI Chat Interface */
+        .zara-ai-container {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .zara-header {
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .zara-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .zara-info h3 {
+            margin-bottom: 5px;
+        }
+        
+        .zara-info p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .zara-status {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success);
+            margin-right: 5px;
+        }
+        
+        .zara-chat {
+            height: 300px;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+        }
+        
+        .message.zara .message-content {
+            background-color: var(--light);
+            border-top-left-radius: 5px;
+        }
+        
+        .message.user .message-content {
+            background-color: var(--secondary);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+        
+        .zara-input {
+            display: flex;
+            padding: 15px;
+            background-color: var(--light);
+        }
+        
+        .zara-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--light);
+            border-radius: 24px;
+            outline: none;
+            font-size: 14px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .zara-input button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .zara-input button:hover {
+            background-color: var(--primary);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 14px;
+            border-top: 1px solid var(--light);
+            margin-top: 30px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar-header .logo-text, 
+            .sidebar-menu span {
+                display: none;
+            }
+            
+            .sidebar-menu li {
+                text-align: center;
+                padding: 15px 10px;
+            }
+            
+            .sidebar-menu i {
+                margin-right: 0;
+                font-size: 20px;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .slogan {
+                font-size: 1.4rem;
+            }
+            
+            .theme-toggle-container {
+                top: 20px;
+                right: 20px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 10px 0;
+            }
+            
+            .sidebar-menu li {
+                padding: 10px 15px;
+                white-space: nowrap;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-hero {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .theme-toggle-container {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                display: flex;
+                justify-content: flex-end;
+            }
+            
+            .analytics-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero {
+                padding: 40px 20px;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .slogan {
+                font-size: 1.2rem;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .theme-toggle span {
+                display: none;
+            }
+            
+            .header-actions {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <div class="logo-text">Defend<span class="logo-iq">IQ</span> Enterprise</div>
+                </div>
+                <div>ZaraAI Integrated</div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="#" id="home-link"><i class="fas fa-home"></i> <span>Home</span></a></li>
+                <li><a href="#"><i class="fas fa-search"></i> <span>Threat Analysis</span></a></li>
+                <li><a href="#"><i class="fas fa-shield-alt"></i> <span>Security Controls</span></a></li>
+                <li><a href="#" id="analytics-link"><i class="fas fa-chart-bar"></i> <span>Analytics</span></a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> <span>Reports</span></a></li>
+                <li><a href="#" id="training-link"><i class="fas fa-graduation-cap"></i> <span>Training</span></a></li>
+                <li><a href="#" id="compliance-link"><i class="fas fa-clipboard-check"></i> <span>Compliance</span></a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Theme Toggle -->
+            <div class="theme-toggle-container">
+                <div class="theme-toggle" id="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                    <span id="theme-label">Dark Mode</span>
+                </div>
+            </div>
+            
+            <div class="header">
+                <div style="display: flex; align-items: center;">
+                    <button class="back-button" id="back-button" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <div class="page-title" id="page-title">Security Dashboard</div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <div class="user-info">
+                        <div class="user-avatar">MJ</div>
+                        <div>Admin User</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Tips Banner -->
+            <div class="tips-banner">
+                <div class="tip-content" id="tip-content">Use strong, unique passwords for all your accounts</div>
+            </div>
+            
+            <!-- Hero Section -->
+            <div class="hero" id="hero-section">
+                <div class="hero-content">
+                    <h1>Enterprise Cybersecurity Intelligence</h1>
+                    <div class="slogan">
+                        <span class="slogan-part1">Defend with Confidence</span> 
+                        <span class="slogan-part2">Grow with Ease</span>
+                    </div>
+                    <p>DefendIQ Enterprise with ZaraAI delivers advanced threat protection, security training, and compliance management in one integrated platform.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-hero btn-secondary">Request Demo</button>
+                        <button class="btn btn-hero btn-outline">Explore Features</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards" id="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Active Threats</div>
+                        <div class="card-icon" style="background-color: var(--danger);">⚠️</div>
+                    </div>
+                    <div class="card-value">12</div>
+                    <div class="card-change positive">↓ 3 from yesterday</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Protected Assets</div>
+                        <div class="card-icon" style="background-color: var(--success);">🛡️</div>
+                    </div>
+                    <div class="card-value">247</div>
+                    <div class="card-change positive">↑ 5 new</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Security Score</div>
+                        <div class="card-icon" style="background-color: var(--secondary);">📊</div>
+                    </div>
+                    <div class="card-value">92%</div>
+                    <div class="card-change positive">↑ 2% improvement</div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Compliance Status</div>
+                        <div class="card-icon" style="background-color: var(--primary);">📝</div>
+                    </div>
+                    <div class="card-value">78%</div>
+                    <div class="card-change positive">AUP System Active</div>
+                </div>
+            </div>
+            
+            <!-- Analytics Dashboard -->
+            <div class="analytics-container" id="analytics-section">
+                <div class="analytics-header">
+                    <h2 class="analytics-title">Advanced Analytics & Reporting</h2>
+                    <div class="analytics-controls">
+                        <div class="date-filter">
+                            <select class="filter-select" id="time-range">
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d" selected>Last 30 Days</option>
+                                <option value="90d">Last 90 Days</option>
+                                <option value="1y">Last Year</option>
+                            </select>
+                            <select class="filter-select" id="data-view">
+                                <option value="overview">Overview</option>
+                                <option value="detailed">Detailed View</option>
+                                <option value="executive">Executive Summary</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" id="export-report">
+                            <i class="fas fa-download"></i> Export Report
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- KPI Metrics -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Overall Risk Score</div>
+                        <div class="kpi-value">72/100</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 8% improvement
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-label">Training Completion</div>
+                        <div class="kpi-value">84%</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 12% increase
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-label">Threats Blocked</div>
+                        <div class="kpi-value">1,247</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 23% more
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-label">Avg Response Time</div>
+                        <div class="kpi-value">2.3m</div>
+                        <div class="kpi-change negative">
+                            <i class="fas fa-arrow-down"></i> 0.4m slower
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Compliance Trend Analysis</div>
+                            <div class="chart-actions">
+                                <button class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            📈 Compliance Trend Chart<br>
+                            <small>Line chart showing compliance progress over time</small>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-title">Risk Distribution</div>
+                            <div class="chart-actions">
+                                <button class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-placeholder">
+                            🎯 Risk Distribution Chart<br>
+                            <small>Pie chart showing risk categories</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Risk Scoring -->
+                <div class="risk-scoring">
+                    <h3>Enterprise Risk Assessment</h3>
+                    <div class="risk-meter">
+                        <div class="risk-indicator" style="left: 72%;"></div>
+                    </div>
+                    <div class="risk-labels">
+                        <span>Low Risk</span>
+                        <span>Medium Risk</span>
+                        <span>High Risk</span>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; font-size: 14px; color: var(--gray);">
+                        Current Risk Level: <strong>Medium (72/100)</strong>
+                    </div>
+                </div>
+                
+                <!-- Heat Map -->
+                <div class="heatmap-container">
+                    <h3>Department Compliance Heatmap</h3>
+                    <div class="heatmap" id="compliance-heatmap">
+                        <!-- Heatmap cells will be generated dynamically -->
+                    </div>
+                    <div class="heatmap-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #d1fae5;"></div>
+                            <span>90-100%</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fef3c7;"></div>
+                            <span>70-89%</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fef3c7;"></div>
+                            <span>50-69%</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fee2e2;"></div>
+                            <span>Below 50%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Report Builder -->
+                <div class="report-builder">
+                    <h3>Custom Report Builder</h3>
+                    <p>Select the metrics and data you want to include in your custom report:</p>
+                    <div class="report-options">
+                        <div class="report-option selected" data-metric="compliance">
+                            <i class="fas fa-clipboard-check"></i>
+                            <div>Compliance Metrics</div>
+                        </div>
+                        <div class="report-option selected" data-metric="training">
+                            <i class="fas fa-graduation-cap"></i>
+                            <div>Training Progress</div>
+                        </div>
+                        <div class="report-option" data-metric="threats">
+                            <i class="fas fa-shield-alt"></i>
+                            <div>Threat Analysis</div>
+                        </div>
+                        <div class="report-option" data-metric="risk">
+                            <i class="fas fa-chart-line"></i>
+                            <div>Risk Assessment</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="generate-report">
+                        <i class="fas fa-file-pdf"></i> Generate Custom Report
+                    </button>
+                </div>
+                
+                <!-- Executive Dashboard -->
+                <div class="executive-dashboard">
+                    <h3>Executive Summary</h3>
+                    <div class="executive-metrics">
+                        <div class="executive-metric">
+                            <div class="metric-value">84%</div>
+                            <div class="metric-label">Overall Compliance</div>
+                        </div>
+                        <div class="executive-metric">
+                            <div class="metric-value">72/100</div>
+                            <div class="metric-label">Risk Score</div>
+                        </div>
+                        <div class="executive-metric">
+                            <div class="metric-value">12</div>
+                            <div class="metric-label">Active Threats</div>
+                        </div>
+                        <div class="executive-metric">
+                            <div class="metric-value">92%</div>
+                            <div class="metric-label">Security Score</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background: var(--card-bg); border-radius: 8px;">
+                        <h4>Key Insights</h4>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Training completion rates improved by 12% this quarter</li>
+                            <li>Phishing attack attempts decreased by 23%</li>
+                            <li>3 departments require immediate compliance attention</li>
+                            <li>Overall risk reduced by 8 points from last assessment</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Predictive Analytics -->
+                <div class="predictive-analytics">
+                    <h3>Predictive Risk Analysis</h3>
+                    <div class="prediction-card">
+                        <div class="prediction-header">
+                            <div class="prediction-title">High Compliance Risk - Finance Department</div>
+                            <div class="prediction-confidence">85% confidence</div>
+                        </div>
+                        <p>Based on current trends, the Finance Department is projected to fall below compliance thresholds within 30 days if current training completion rates continue.</p>
+                    </div>
+                    <div class="prediction-card">
+                        <div class="prediction-header">
+                            <div class="prediction-title">Phishing Attack Surge Prediction</div>
+                            <div class="prediction-confidence">78% confidence</div>
+                        </div>
+                        <p>AI models predict a 45% increase in sophisticated phishing attempts targeting senior leadership in the next 14 days.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ZaraAI Chat Interface -->
+            <div class="zara-ai-container">
+                <div class="zara-header">
+                    <div class="zara-avatar">Z</div>
+                    <div class="zara-info">
+                        <h3>ZaraAI Security Assistant</h3>
+                        <p>Your AI-powered security companion & productivity partner</p>
+                    </div>
+                    <div class="zara-status">
+                        <div class="status-indicator"></div>
+                        <span>Online</span>
+                    </div>
+                </div>
+                
+                <div class="zara-chat" id="chat-messages">
+                    <div class="message zara">
+                        <div class="message-content">
+                            Hello! I'm ZaraAI, your security assistant and productivity partner. I'm here to help protect your enterprise and support your success. How can I assist you today?
+                        </div>
+                    </div>
+                    <div class="message user">
+                        <div class="message-content">
+                            Welcome back Zara! Can you give me an analytics overview?
+                        </div>
+                    </div>
+                    <div class="message zara">
+                        <div class="message-content">
+                            Certainly! I'm analyzing your security analytics now. Your overall risk score is 72/100 with 84% compliance rate. I'm detecting positive trends in training completion and threat prevention. Would you like me to generate a detailed report?
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="zara-input">
+                    <input type="text" id="user-input" placeholder="Ask ZaraAI about analytics, reports, or predictions...">
+                    <button id="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="footer">
+                DefendIQ Enterprise with ZaraAI | © 2024 Security Systems | All rights reserved
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current application state
+        let currentState = {
+            page: 'dashboard',
+            theme: 'light',
+            analytics: {
+                timeRange: '30d',
+                dataView: 'overview',
+                selectedMetrics: ['compliance', 'training']
+            },
+            securityTips: [
+                "Use strong, unique passwords for all your accounts",
+                "Enable multi-factor authentication whenever possible",
+                "Keep your software and systems updated regularly",
+                "Be cautious of phishing emails and suspicious links",
+                "Regularly review your security analytics dashboard",
+                "Use predictive analytics to anticipate security threats",
+                "Monitor compliance trends to identify areas for improvement"
+            ],
+            currentTipIndex: 0
+        };
+
+        // DOM elements
+        const homeLink = document.getElementById('home-link');
+        const analyticsLink = document.getElementById('analytics-link');
+        const trainingLink = document.getElementById('training-link');
+        const complianceLink = document.getElementById('compliance-link');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const backButton = document.getElementById('back-button');
+        const pageTitle = document.getElementById('page-title');
+        const heroSection = document.getElementById('hero-section');
+        const dashboardCards = document.getElementById('dashboard-cards');
+        const analyticsSection = document.getElementById('analytics-section');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeLabel = document.getElementById('theme-label');
+        const tipContent = document.getElementById('tip-content');
+        const timeRange = document.getElementById('time-range');
+        const dataView = document.getElementById('data-view');
+        const exportReport = document.getElementById('export-report');
+        const generateReport = document.getElementById('generate-report');
+        const complianceHeatmap = document.getElementById('compliance-heatmap');
+
+        // ZaraAI Chat Functionality
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        
+        // Enhanced ZaraAI responses with analytics focus
+        const zaraResponses = {
+            analytics: [
+                "I'm analyzing your security metrics now. Your compliance rate is trending positively at 84%, and risk scores have improved by 8% this quarter.",
+                "Based on current data, I predict a 23% decrease in phishing attempts over the next month. Your training initiatives are showing excellent results.",
+                "I've identified 3 departments that require immediate compliance attention. Would you like me to generate a targeted action plan?",
+                "Your security analytics show a 12% improvement in training completion rates. The risk heatmap indicates Finance Department needs focus.",
+                "I can create a custom executive report highlighting your key security metrics and predictive risk analysis. Ready to generate?"
+            ],
+            predictions: [
+                "My predictive models indicate a potential compliance dip in the Finance Department within 30 days if current trends continue.",
+                "I'm forecasting a 45% increase in sophisticated phishing attacks targeting executives in the next two weeks.",
+                "Based on training completion rates, I predict your overall compliance will reach 90% within the next quarter.",
+                "Risk assessment models show a 78% probability of reduced threat incidents if current security measures are maintained."
+            ],
+            reports: [
+                "I can generate a comprehensive security report with compliance metrics, risk analysis, and predictive insights. Which time period would you like to cover?",
+                "Your custom report is ready! It includes compliance trends, threat analysis, and department-level risk assessments.",
+                "I've prepared an executive summary highlighting your key security achievements and areas for improvement.",
+                "The analytics dashboard shows positive momentum across all security metrics. Would you like to export this as a PDF report?"
+            ]
+        };
+        
+        // Function to add a message to the chat
+        function addMessage(message, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'zara'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = message;
+            
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Function to get ZaraAI response
+        function getZaraResponse(userMessage = '') {
+            const lowerMessage = userMessage.toLowerCase();
+            
+            // Check for specific triggers
+            if (lowerMessage.includes('analytics') || lowerMessage.includes('metrics') || lowerMessage.includes('data')) {
+                const responses = zaraResponses.analytics;
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+            
+            if (lowerMessage.includes('predict') || lowerMessage.includes('forecast') || lowerMessage.includes('trend')) {
+                const responses = zaraResponses.predictions;
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+            
+            if (lowerMessage.includes('report') || lowerMessage.includes('export') || lowerMessage.includes('summary')) {
+                const responses = zaraResponses.reports;
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+            
+            // Default analytics response
+            const analyticsResponses = zaraResponses.analytics;
+            return analyticsResponses[Math.floor(Math.random() * analyticsResponses.length)];
+        }
+        
+        // Send message function
+        function sendMessage() {
+            const message = userInput.value.trim();
+            
+            if (message) {
+                // Add user message
+                addMessage(message, true);
+                
+                // Clear input
+                userInput.value = '';
+                
+                // Simulate ZaraAI thinking
+                setTimeout(() => {
+                    // Add ZaraAI response
+                    addMessage(getZaraResponse(message), false);
+                }, 1000);
+            }
+        }
+
+        // Navigation functions
+        function showDashboard() {
+            currentState.page = 'dashboard';
+            pageTitle.textContent = 'Security Dashboard';
+            heroSection.style.display = 'block';
+            dashboardCards.style.display = 'grid';
+            analyticsSection.style.display = 'none';
+            backButton.style.display = 'none';
+        }
+
+        function showAnalytics() {
+            currentState.page = 'analytics';
+            pageTitle.textContent = 'Advanced Analytics & Reporting';
+            heroSection.style.display = 'none';
+            dashboardCards.style.display = 'none';
+            analyticsSection.style.display = 'block';
+            backButton.style.display = 'inline-flex';
+            
+            // Initialize analytics components
+            initializeHeatmap();
+            initializeReportBuilder();
+        }
+
+        // Analytics Functions
+        function initializeHeatmap() {
+            complianceHeatmap.innerHTML = '';
+            
+            // Departments and their compliance scores
+            const departments = [
+                { name: 'IT', score: 92 },
+                { name: 'Finance', score: 65 },
+                { name: 'HR', score: 88 },
+                { name: 'Sales', score: 78 },
+                { name: 'Marketing', score: 85 },
+                { name: 'Operations', score: 91 },
+                { name: 'Legal', score: 94 }
+            ];
+            
+            departments.forEach(dept => {
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+                cell.textContent = dept.name.substring(0, 2);
+                
+                // Set color based on score
+                if (dept.score >= 90) {
+                    cell.style.backgroundColor = '#d1fae5'; // Green
+                } else if (dept.score >= 70) {
+                    cell.style.backgroundColor = '#fef3c7'; // Yellow
+                } else if (dept.score >= 50) {
+                    cell.style.backgroundColor = '#fed7aa'; // Orange
+                } else {
+                    cell.style.backgroundColor = '#fee2e2'; // Red
+                }
+                
+                cell.title = `${dept.name}: ${dept.score}% Compliance`;
+                complianceHeatmap.appendChild(cell);
+            });
+        }
+
+        function initializeReportBuilder() {
+            const reportOptions = document.querySelectorAll('.report-option');
+            
+            reportOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const metric = this.dataset.metric;
+                    const isSelected = this.classList.contains('selected');
+                    
+                    if (isSelected) {
+                        this.classList.remove('selected');
+                        // Remove from selected metrics
+                        const index = currentState.analytics.selectedMetrics.indexOf(metric);
+                        if (index > -1) {
+                            currentState.analytics.selectedMetrics.splice(index, 1);
+                        }
+                    } else {
+                        this.classList.add('selected');
+                        // Add to selected metrics
+                        if (!currentState.analytics.selectedMetrics.includes(metric)) {
+                            currentState.analytics.selectedMetrics.push(metric);
+                        }
+                    }
+                });
+            });
+        }
+
+        function generateCustomReport() {
+            const metrics = currentState.analytics.selectedMetrics.join(', ');
+            alert(`Generating custom report with: ${metrics}\n\nThis would create a comprehensive PDF report with charts, analysis, and recommendations in a real implementation.`);
+            
+            // Simulate report generation
+            addMessage(`I've generated your custom report including ${metrics}. The report is now available for download and includes predictive analytics and executive recommendations.`, false);
+        }
+
+        function exportAnalyticsReport() {
+            alert('Exporting analytics report...\n\nIn a real implementation, this would download a PDF/Excel file with all current analytics data, charts, and insights.');
+            
+            // Simulate export process
+            addMessage("I'm preparing your analytics export. This includes compliance trends, risk assessments, and predictive insights. The file will be ready for download shortly.", false);
+        }
+
+        // Theme toggle function
+        function toggleTheme() {
+            if (currentState.theme === 'light') {
+                currentState.theme = 'dark';
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> <span id="theme-label">Light Mode</span>';
+                themeLabel.textContent = 'Light Mode';
+            } else {
+                currentState.theme = 'light';
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> <span id="theme-label">Dark Mode</span>';
+                themeLabel.textContent = 'Dark Mode';
+            }
+        }
+
+        // Security tips rotation
+        function rotateSecurityTip() {
+            currentState.currentTipIndex = (currentState.currentTipIndex + 1) % currentState.securityTips.length;
+            tipContent.textContent = currentState.securityTips[currentState.currentTipIndex];
+        }
+
+        // Back button functionality
+        function goBack() {
+            switch(currentState.page) {
+                case 'analytics':
+                    showDashboard();
+                    break;
+                default:
+                    showDashboard();
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation
+            homeLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showDashboard();
+            });
+            
+            analyticsLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showAnalytics();
+            });
+            
+            // Back button
+            backButton.addEventListener('click', goBack);
+            
+            // Refresh button
+            refreshBtn.addEventListener('click', function() {
+                const originalText = refreshBtn.innerHTML;
+                refreshBtn.innerHTML = '<i class="fas fa-check"></i> Refreshed';
+                setTimeout(() => {
+                    refreshBtn.innerHTML = originalText;
+                }, 2000);
+            });
+            
+            // Analytics controls
+            timeRange.addEventListener('change', function() {
+                currentState.analytics.timeRange = this.value;
+                addMessage(`Updated analytics time range to ${this.options[this.selectedIndex].text}. Refreshing data...`, false);
+            });
+            
+            dataView.addEventListener('change', function() {
+                currentState.analytics.dataView = this.value;
+                addMessage(`Switched to ${this.options[this.selectedIndex].text} view.`, false);
+            });
+            
+            exportReport.addEventListener('click', exportAnalyticsReport);
+            generateReport.addEventListener('click', generateCustomReport);
+            
+            // ZaraAI chat
+            sendBtn.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Security tips rotation
+            setInterval(rotateSecurityTip, 5000);
+            
+            // Welcome message with analytics focus
+            setTimeout(() => {
+                addMessage("I'm ready to help you analyze your security data! I can generate reports, predict risks, and provide insights to improve your security posture. What would you like to explore?", false);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

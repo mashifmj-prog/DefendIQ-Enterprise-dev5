@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DefendIQ Enterprise | Quantum Shield Cryptography</title>
+    <meta name="theme-color" content="#004d40">
+    <meta name="description" content="DefendIQ Enterprise - Quantum Shield Advanced Cryptography & Quantum-Resistant Security">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --quantum-primary: #004d40;
+            --quantum-secondary: #00796b;
+            --quantum-accent: #4db6ac;
+            --crypto-primary: #6a1b9a;
+            --crypto-secondary: #8e24aa;
+            --quantum-glow: #00e5ff;
+            --success: #43a047;
+            --warning: #ffb300;
+            --danger: #e53935;
+            --light: #f5f5f5;
+            --dark: #212121;
+            --gray: #9e9e9e;
+            --bg-color: #f8f9fa;
+            --text-color: #212121;
+            --card-bg: white;
+            --sidebar-bg: linear-gradient(to bottom, var(--quantum-primary), #00251a);
+            --header-bg: white;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0a0a0a;
+            --text-color: #e0e0e0;
+            --card-bg: #1a1a1a;
+            --sidebar-bg: linear-gradient(to bottom, #00251a, #000f0a);
+            --header-bg: #2d2d2d;
+            --light: #2d2d2d;
+            --gray: #aaaaaa;
+            --dark: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .quantum-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 229, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(77, 182, 172, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 121, 107, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 65%, rgba(0, 229, 255, 0.1) 100%);
+            pointer-events: none;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+            margin-right: 10px;
+            filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.5));
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .logo-iq {
+            color: var(--quantum-accent);
+            text-shadow: 0 0 10px rgba(77, 182, 172, 0.5);
+        }
+        
+        .phase-badge {
+            background: linear-gradient(135deg, var(--quantum-accent), var(--quantum-glow));
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+            display: inline-block;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar-menu li::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .sidebar-menu li:hover::before {
+            left: 100%;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: rgba(0, 229, 255, 0.1);
+            border-left: 4px solid var(--quantum-glow);
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: rgba(0, 229, 255, 0.05);
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .menu-badge {
+            background: var(--quantum-glow);
+            color: var(--quantum-primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background: transparent;
+            position: relative;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--header-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--quantum-primary), var(--quantum-glow), var(--quantum-primary));
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--quantum-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .title-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0, 77, 64, 0.3);
+        }
+        
+        .title-badge {
+            background: linear-gradient(135deg, var(--quantum-accent), var(--quantum-glow));
+            color: var(--quantum-primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 77, 64, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 77, 64, 0.4);
+        }
+        
+        .btn-quantum {
+            background: linear-gradient(135deg, var(--quantum-accent), var(--quantum-glow));
+            color: var(--quantum-primary);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+        }
+        
+        .btn-crypto {
+            background: linear-gradient(135deg, var(--crypto-primary), var(--crypto-secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(106, 27, 154, 0.3);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-glow));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+        }
+        
+        /* Quantum Dashboard */
+        .quantum-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .quantum-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quantum-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--quantum-accent), var(--quantum-glow));
+        }
+        
+        .quantum-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .quantum-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .quantum-card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--quantum-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .quantum-card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .icon-quantum {
+            background: linear-gradient(135deg, var(--quantum-accent), var(--quantum-glow));
+        }
+        
+        .icon-crypto {
+            background: linear-gradient(135deg, var(--crypto-primary), var(--crypto-secondary));
+        }
+        
+        .quantum-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .quantum-stat {
+            text-align: center;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+        }
+        
+        .quantum-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .quantum-label {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        /* Encryption Matrix */
+        .encryption-matrix {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .encryption-matrix::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--crypto-primary), var(--crypto-secondary));
+        }
+        
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+        
+        .matrix-cell {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .matrix-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(0, 229, 255, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .matrix-cell:hover::before {
+            opacity: 1;
+        }
+        
+        .matrix-cell.active {
+            border-color: var(--quantum-glow);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+        }
+        
+        .matrix-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: var(--quantum-primary);
+        }
+        
+        .matrix-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--quantum-primary);
+        }
+        
+        .matrix-desc {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* Quantum Key Distribution */
+        .qkd-system {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .qkd-system::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--quantum-glow), var(--quantum-accent));
+        }
+        
+        .qkd-visualization {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 16px;
+            position: relative;
+        }
+        
+        .qkd-node {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .qkd-node::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--quantum-glow), transparent);
+            z-index: 1;
+        }
+        
+        .qkd-node:last-child::after {
+            display: none;
+        }
+        
+        .node-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 12px;
+            box-shadow: 0 6px 20px rgba(0, 77, 64, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .node-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--quantum-glow);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            z-index: 1;
+        }
+        
+        .node-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--quantum-primary);
+        }
+        
+        /* Crypto Algorithms */
+        .crypto-algorithms {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .algorithm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+        
+        .algorithm-card {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--crypto-primary);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .algorithm-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        
+        .algorithm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .algorithm-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--crypto-primary);
+            margin-bottom: 5px;
+        }
+        
+        .algorithm-type {
+            background: var(--crypto-primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .algorithm-stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .algo-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .algo-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--quantum-primary);
+        }
+        
+        .algo-label {
+            font-size: 11px;
+            color: var(--gray);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        /* Security Metrics */
+        .security-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--quantum-primary), var(--quantum-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { 
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes quantumGlow {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(0, 229, 255, 0.6), 0 0 40px rgba(0, 229, 255, 0.3);
+            }
+        }
+        
+        .quantum-glow {
+            animation: quantumGlow 2s ease-in-out infinite;
+        }
+        
+        /* Quantum Particles */
+        .quantum-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--quantum-glow);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .quantum-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .matrix-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .qkd-visualization {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .qkd-node::after {
+                display: none;
+            }
+            
+            .algorithm-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .security-metrics {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Quantum Background Elements -->
+    <div class="quantum-bg"></div>
+    <div class="quantum-particles" id="quantumParticles"></div>
+    
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <div class="logo-text">Defend<span class="logo-iq">IQ</span> Enterprise</div>
+                </div>
+                <div class="phase-badge">Quantum Shield v7.0</div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="#">
+                    <span><i class="fas fa-atom"></i> Quantum Dashboard</span>
+                    <span class="menu-badge">NEW</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-key"></i> Key Management</span>
+                    <span class="menu-badge">256</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-lock"></i> Encryption Matrix</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-exchange-alt"></i> QKD System</span>
+                    <span class="menu-badge">ACTIVE</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-shield-alt"></i> Crypto Algorithms</span>
+                    <span class="menu-badge">12</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-hub"></i> Guardian Nexus</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-cog"></i> Quantum Settings</span>
+                </a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="page-title">
+                    <div class="title-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <div>
+                        Quantum Shield Cryptography
+                        <div class="title-badge">Post-Quantum Ready</div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-quantum" id="generate-keys">
+                        <i class="fas fa-key"></i> Generate Q-Keys
+                    </button>
+                    <button class="btn btn-crypto" id="encrypt-data">
+                        <i class="fas fa-lock"></i> Encrypt Data
+                    </button>
+                    <button class="btn btn-primary" id="quantum-scan">
+                        <i class="fas fa-search"></i> Quantum Scan
+                    </button>
+                    <div class="user-info">
+                        <div class="user-avatar">QS</div>
+                        <div>Crypto Admin</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Metrics -->
+            <div class="security-metrics">
+                <div class="metric-card">
+                    <div class="metric-value">99.99%</div>
+                    <div class="metric-label">Encryption Strength</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0</div>
+                    <div class="metric-label">Security Breaches</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">2048-bit</div>
+                    <div class="metric-label">Current Key Size</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">Q-Day +15y</div>
+                    <div class="metric-label">Quantum Resistance</div>
+                </div>
+            </div>
+            
+            <!-- Quantum Dashboard -->
+            <div class="quantum-dashboard">
+                <div class="quantum-card">
+                    <div class="quantum-card-header">
+                        <div class="quantum-card-title">
+                            <div class="quantum-card-icon icon-quantum">
+                                <i class="fas fa-atom"></i>
+                            </div>
+                            Quantum Key Distribution
+                        </div>
+                        <div class="quantum-value">100%</div>
+                    </div>
+                    <div class="quantum-stats">
+                        <div class="quantum-stat">
+                            <div class="quantum-value">12.8M</div>
+                            <div class="quantum-label">Keys Generated</div>
+                        </div>
+                        <div class="quantum-stat">
+                            <div class="quantum-value">0</div>
+                            <div class="quantum-label">Interception Attempts</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="quantum-card">
+                    <div class="quantum-card-header">
+                        <div class="quantum-card-title">
+                            <div class="quantum-card-icon icon-crypto">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            Cryptographic Operations
+                        </div>
+                        <div class="quantum-value">98.7%</div>
+                    </div>
+                    <div class="quantum-stats">
+                        <div class="quantum-stat">
+                            <div class="quantum-value">2.4M</div>
+                            <div class="quantum-label">Encryptions/Hour</div>
+                        </div>
+                        <div class="quantum-stat">
+                            <div class="quantum-value">42ms</div>
+                            <div class="quantum-label">Avg. Operation Time</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Encryption Matrix -->
+            <div class="encryption-matrix">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-lock"></i>
+                        Quantum Encryption Matrix
+                    </div>
+                    <button class="btn btn-primary" id="refresh-matrix">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                
+                <div class="matrix-grid">
+                    <div class="matrix-cell active" data-algorithm="kyber">
+                        <div class="matrix-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="matrix-title">Kyber-1024</div>
+                        <div class="matrix-desc">Lattice-based KEM</div>
+                    </div>
+                    
+                    <div class="matrix-cell" data-algorithm="dilithium">
+                        <div class="matrix-icon">
+                            <i class="fas fa-signature"></i>
+                        </div>
+                        <div class="matrix-title">Dilithium-3</div>
+                        <div class="matrix-desc">Digital Signatures</div>
+                    </div>
+                    
+                    <div class="matrix-cell" data-algorithm="falcon">
+                        <div class="matrix-icon">
+                            <i class="fas fa-feather-alt"></i>
+                        </div>
+                        <div class="matrix-title">Falcon-1024</div>
+                        <div class="matrix-desc">Fast Signatures</div>
+                    </div>
+                    
+                    <div class="matrix-cell" data-algorithm="sphincs">
+                        <div class="matrix-icon">
+                            <i class="fas fa-tree"></i>
+                        </div>
+                        <div class="matrix-title">SPHINCS+</div>
+                        <div class="matrix-desc">Hash-based Signatures</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quantum Key Distribution System -->
+            <div class="qkd-system">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        Quantum Key Distribution Network
+                    </div>
+                    <button class="btn btn-quantum" id="start-qkd">
+                        <i class="fas fa-play"></i> Start QKD
+                    </button>
+                </div>
+                
+                <div class="qkd-visualization">
+                    <div class="qkd-node">
+                        <div class="node-pulse"></div>
+                        <div class="node-icon">
+                            <i class="fas fa-satellite"></i>
+                        </div>
+                        <div class="node-title">Alice</div>
+                    </div>
+                    
+                    <div class="qkd-node">
+                        <div class="node-pulse"></div>
+                        <div class="node-icon quantum-glow">
+                            <i class="fas fa-photon"></i>
+                        </div>
+                        <div class="node-title">Quantum Channel</div>
+                    </div>
+                    
+                    <div class="qkd-node">
+                        <div class="node-pulse"></div>
+                        <div class="node-icon">
+                            <i class="fas fa-satellite-dish"></i>
+                        </div>
+                        <div class="node-title">Bob</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cryptographic Algorithms -->
+            <div class="crypto-algorithms">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-shield-alt"></i>
+                        Post-Quantum Cryptographic Algorithms
+                    </div>
+                    <button class="btn btn-crypto" id="benchmark-algos">
+                        <i class="fas fa-tachometer-alt"></i> Benchmark
+                    </button>
+                </div>
+                
+                <div class="algorithm-grid">
+                    <div class="algorithm-card" data-algo="kyber">
+                        <div class="algorithm-header">
+                            <div>
+                                <div class="algorithm-title">Kyber-1024</div>
+                                <div class="algorithm-desc">Lattice-based Key Encapsulation</div>
+                            </div>
+                            <div class="algorithm-type">KEM</div>
+                        </div>
+                        <div class="algorithm-stats">
+                            <div class="algo-stat">
+                                <div class="algo-value">256-bit</div>
+                                <div class="algo-label">Security</div>
+                            </div>
+                            <div class="algo-stat">
+                                <div class="algo-value">3.2KB</div>
+                                <div class="algo-label">Key Size</div>
+                            </div>
+                            <div class="algo-stat">
+                                <div class="algo-value">98%</div>
+                                <div class="algo-label">Efficiency</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="algorithm-card" data-algo="dilithium">
+                        <div class="algorithm-header">
+                            <div>
+                                <div class="algorithm-title">Dilithium-3</div>
+                                <div class="algorithm-desc">Lattice-based Digital Signatures</div>
+                            </div>
+                            <div class="algorithm-type">SIG</div>
+                        </div>
+                        <div class="algorithm-stats">
+                            <div class="algo-stat">
+                                <div class="algo-value">128-bit</div>
+                                <div class="algo-label">Security</div>
+                            </div>
+                            <div class="algo-stat">
+                                <div class="algo-value">2.5KB</div>
+                                <div class="algo-label">Sig Size</div>
+                            </div>
+                            <div class="algo-stat">
+                                <div class="algo-value">95%</div>
+                                <div class="algo-label">Efficiency</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quantum Shield Cryptography System
+        const quantumShield = {
+            // Quantum State
+            quantumState: {
+                qkdActive: false,
+                currentAlgorithm: 'kyber',
+                encryptionStrength: 99.99,
+                keysGenerated: 12800000,
+                interceptions: 0
+            },
+            
+            // Post-Quantum Algorithms
+            algorithms: {
+                kyber: {
+                    name: 'Kyber-1024',
+                    type: 'KEM',
+                    security: '256-bit',
+                    keySize: '3.2KB',
+                    efficiency: 98,
+                    quantumResistant: true
+                },
+                dilithium: {
+                    name: 'Dilithium-3',
+                    type: 'SIG',
+                    security: '128-bit',
+                    keySize: '2.5KB',
+                    efficiency: 95,
+                    quantumResistant: true
+                },
+                falcon: {
+                    name: 'Falcon-1024',
+                    type: 'SIG',
+                    security: '256-bit',
+                    keySize: '1.3KB',
+                    efficiency: 92,
+                    quantumResistant: true
+                },
+                sphincs: {
+                    name: 'SPHINCS+',
+                    type: 'SIG',
+                    security: '128-bit',
+                    keySize: '17KB',
+                    efficiency: 85,
+                    quantumResistant: true
+                }
+            },
+            
+            // Initialize Quantum System
+            initialize: function() {
+                this.createParticles();
+                this.bindEvents();
+                this.startQKDAnimation();
+                this.updateDashboard();
+            },
+            
+            // Create quantum particles background
+            createParticles: function() {
+                const container = document.getElementById('quantumParticles');
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    // Random properties
+                    const left = Math.random() * 100;
+                    const delay = Math.random() * 6;
+                    const duration = 4 + Math.random() * 4;
+                    const size = 2 + Math.random() * 4;
+                    
+                    particle.style.left = `${left}%`;
+                    particle.style.animationDelay = `${delay}s`;
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    container.appendChild(particle);
+                }
+            },
+            
+            // Bind event listeners
+            bindEvents: function() {
+                // Matrix cells
+                document.querySelectorAll('.matrix-cell').forEach(cell => {
+                    cell.addEventListener('click', (e) => {
+                        const algorithm = cell.dataset.algorithm;
+                        this.selectAlgorithm(algorithm);
+                    });
+                });
+                
+                // Algorithm cards
+                document.querySelectorAll('.algorithm-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const algorithm = card.dataset.algo;
+                        this.showAlgorithmDetails(algorithm);
+                    });
+                });
+                
+                // Button events
+                document.getElementById('generate-keys').addEventListener('click', () => {
+                    this.generateQuantumKeys();
+                });
+                
+                document.getElementById('encrypt-data').addEventListener('click', () => {
+                    this.encryptData();
+                });
+                
+                document.getElementById('quantum-scan').addEventListener('click', () => {
+                    this.runQuantumScan();
+                });
+                
+                document.getElementById('start-qkd').addEventListener('click', () => {
+                    this.toggleQKD();
+                });
+                
+                document.getElementById('refresh-matrix').addEventListener('click', () => {
+                    this.refreshEncryptionMatrix();
+                });
+                
+                document.getElementById('benchmark-algos').addEventListener('click', () => {
+                    this.benchmarkAlgorithms();
+                });
+            },
+            
+            // Select encryption algorithm
+            selectAlgorithm: function(algorithm) {
+                // Update active state
+                document.querySelectorAll('.matrix-cell').forEach(cell => {
+                    cell.classList.remove('active');
+                });
+                document.querySelector(`[data-algorithm="${algorithm}"]`).classList.add('active');
+                
+                this.quantumState.currentAlgorithm = algorithm;
+                this.showNotification(`Selected ${this.algorithms[algorithm].name} for encryption`, 'success');
+            },
+            
+            // Generate quantum keys
+            generateQuantumKeys: function() {
+                this.quantumState.keysGenerated += 1024;
+                this.updateDashboard();
+                
+                this.showNotification('Generated 1024 new quantum-resistant key pairs', 'success');
+                
+                // Visual feedback
+                const btn = document.getElementById('generate-keys');
+                btn.classList.add('quantum-glow');
+                setTimeout(() => {
+                    btn.classList.remove('quantum-glow');
+                }, 2000);
+            },
+            
+            // Encrypt data
+            encryptData: function() {
+                const algorithm = this.algorithms[this.quantumState.currentAlgorithm];
+                this.showNotification(`Encrypting data with ${algorithm.name} (${algorithm.security} security)`, 'info');
+                
+                // Simulate encryption process
+                setTimeout(() => {
+                    this.showNotification('Data encrypted successfully with quantum-resistant algorithm', 'success');
+                }, 1500);
+            },
+            
+            // Run quantum security scan
+            runQuantumScan: function() {
+                this.showNotification('Initiating quantum security vulnerability scan...', 'info');
+                
+                // Simulate scan process
+                let progress = 0;
+                const scanInterval = setInterval(() => {
+                    progress += 10;
+                    if (progress >= 100) {
+                        clearInterval(scanInterval);
+                        this.showNotification('Quantum security scan complete: No vulnerabilities detected', 'success');
+                    }
+                }, 200);
+            },
+            
+            // Toggle QKD system
+            toggleQKD: function() {
+                this.quantumState.qkdActive = !this.quantumState.qkdActive;
+                const btn = document.getElementById('start-qkd');
+                
+                if (this.quantumState.qkdActive) {
+                    btn.innerHTML = '<i class="fas fa-stop"></i> Stop QKD';
+                    btn.classList.add('quantum-glow');
+                    this.showNotification('Quantum Key Distribution system activated', 'success');
+                } else {
+                    btn.innerHTML = '<i class="fas fa-play"></i> Start QKD';
+                    btn.classList.remove('quantum-glow');
+                    this.showNotification('QKD system deactivated', 'warning');
+                }
+            },
+            
+            // Refresh encryption matrix
+            refreshEncryptionMatrix: function() {
+                document.querySelectorAll('.matrix-cell').forEach(cell => {
+                    cell.style.opacity = '0.5';
+                    setTimeout(() => {
+                        cell.style.opacity = '1';
+                    }, 500);
+                });
+                
+                this.showNotification('Encryption matrix refreshed with latest algorithms', 'info');
+            },
+            
+            // Benchmark algorithms
+            benchmarkAlgorithms: function() {
+                this.showNotification('Running cryptographic algorithm benchmarks...', 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('Benchmark complete: Kyber-1024 shows optimal performance', 'success');
+                }, 3000);
+            },
+            
+            // Show algorithm details
+            showAlgorithmDetails: function(algorithm) {
+                const algo = this.algorithms[algorithm];
+                this.showNotification(
+                    `${algo.name} - ${algo.type}<br>` +
+                    `Security: ${algo.security} | Key Size: ${algo.keySize}<br>` +
+                    `Efficiency: ${algo.efficiency}% | Quantum Resistant: ${algo.quantumResistant ? 'Yes' : 'No'}`,
+                    'info'
+                );
+            },
+            
+            // Start QKD animation
+            startQKDAnimation: function() {
+                const pulses = document.querySelectorAll('.node-pulse');
+                pulses.forEach((pulse, index) => {
+                    pulse.style.animationDelay = `${index * 0.5}s`;
+                });
+            },
+            
+            // Update dashboard
+            updateDashboard: function() {
+                // Update key count
+                document.querySelector('.quantum-stat:first-child .quantum-value').textContent = 
+                    (this.quantumState.keysGenerated / 1000000).toFixed(1) + 'M';
+                
+                // Update interception attempts
+                document.querySelector('.quantum-stat:last-child .quantum-value').textContent = 
+                    this.quantumState.interceptions;
+            },
+            
+            // Notification system
+            showNotification: function(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `quantum-notification notification-${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                        ${message}
+                    </div>
+                `;
+                
+                // Add styles for notification
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#43a047' : type === 'warning' ? '#ffb300' : '#1976d2'};
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    animation: slideInRight 0.3s ease-out;
+                    max-width: 400px;
+                    border-left: 4px solid ${type === 'success' ? '#2e7d32' : type === 'warning' ? '#f57c00' : '#1565c0'};
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Remove after 4 seconds
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease-in';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 4000);
+            }
+        };
+
+        // Initialize Quantum Shield when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            quantumShield.initialize();
+            
+            // Add CSS for notifications
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                
+                .quantum-notification {
+                    font-weight: 600;
+                    backdrop-filter: blur(10px);
+                }
+                
+                .notification-content i {
+                    margin-right: 10px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                console.log('Quantum Shield PWA Service Worker would be registered here');
+            });
+        }
+    </script>
+</body>
+</html>

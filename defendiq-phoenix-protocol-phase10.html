@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DefendIQ Enterprise | Phoenix Protocol Incident Response</title>
+    <meta name="theme-color" content="#d32f2f">
+    <meta name="description" content="DefendIQ Enterprise - Phoenix Protocol Advanced Incident Response & Cyber Resilience">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --phoenix-primary: #d32f2f;
+            --phoenix-secondary: #f44336;
+            --phoenix-accent: #ff8a65;
+            --incident-critical: #d32f2f;
+            --incident-high: #ff9800;
+            --incident-medium: #ffeb3b;
+            --incident-low: #4caf50;
+            --recovery: #7b1fa2;
+            --resilience: #00897b;
+            --success: #43a047;
+            --warning: #ffb300;
+            --danger: #e53935;
+            --light: #f5f5f5;
+            --dark: #212121;
+            --gray: #9e9e9e;
+            --bg-color: #1a0f0f;
+            --text-color: #ffebee;
+            --card-bg: #c62828;
+            --sidebar-bg: linear-gradient(to bottom, #d32f2f, #b71c1c);
+            --header-bg: #d32f2f;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #fce4ec;
+            --text-color: #c62828;
+            --card-bg: white;
+            --sidebar-bg: linear-gradient(to bottom, #d32f2f, #f44336);
+            --header-bg: white;
+            --light: #ffebee;
+            --dark: #c62828;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .phoenix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(244, 67, 54, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 138, 101, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(211, 47, 47, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .flame-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .flame-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--phoenix-accent);
+            border-radius: 50%;
+            animation: rise 8s infinite linear;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 100;
+            border-right: 1px solid rgba(255, 138, 101, 0.3);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 138, 101, 0.3);
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 32px;
+            margin-right: 10px;
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .logo-iq {
+            color: var(--phoenix-accent);
+        }
+        
+        .phase-badge {
+            background: linear-gradient(135deg, var(--phoenix-accent), #ffab91);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu li {
+            padding: 12px 20px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar-menu li.active {
+            background-color: rgba(255, 138, 101, 0.2);
+            border-left: 4px solid var(--phoenix-accent);
+        }
+        
+        .sidebar-menu li:hover {
+            background-color: rgba(255, 138, 101, 0.1);
+        }
+        
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .menu-badge {
+            background: var(--phoenix-accent);
+            color: var(--phoenix-primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .alert-pulse {
+            animation: alertPulse 2s infinite;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background: transparent;
+            position: relative;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--header-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 138, 101, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--phoenix-primary), var(--phoenix-accent), var(--phoenix-primary));
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .title-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--phoenix-primary), var(--phoenix-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .title-badge {
+            background: linear-gradient(135deg, var(--phoenix-accent), #ffab91);
+            color: var(--phoenix-primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--phoenix-primary), var(--phoenix-secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
+        }
+        
+        .btn-incident {
+            background: linear-gradient(135deg, var(--incident-critical), #e53935);
+            color: white;
+        }
+        
+        .btn-recovery {
+            background: linear-gradient(135deg, var(--recovery), #8e24aa);
+            color: white;
+        }
+        
+        .btn-resilience {
+            background: linear-gradient(135deg, var(--resilience), #00bcd4);
+            color: white;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--phoenix-primary), var(--phoenix-accent));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        /* Incident Dashboard */
+        .incident-dashboard {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .incident-map {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 138, 101, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .incident-map::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--phoenix-accent), #ffab91);
+        }
+        
+        .map-container {
+            height: 300px;
+            background: #2a1515;
+            border-radius: 12px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 138, 101, 0.3);
+        }
+        
+        .incident-marker {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: incidentPulse 2s infinite;
+            cursor: pointer;
+        }
+        
+        .incident-critical { background: var(--incident-critical); }
+        .incident-high { background: var(--incident-high); }
+        .incident-medium { background: var(--incident-medium); }
+        .incident-low { background: var(--incident-low); }
+        
+        .incident-stats {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 138, 101, 0.3);
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 138, 101, 0.2);
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .stat-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .stat-details p {
+            font-size: 12px;
+            color: var(--phoenix-accent);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        /* Active Incidents */
+        .active-incidents {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 138, 101, 0.3);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .active-incidents::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--incident-critical), var(--incident-high));
+        }
+        
+        .incident-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .incident-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 138, 101, 0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 138, 101, 0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .incident-item:hover {
+            transform: translateX(5px);
+            border-color: var(--phoenix-accent);
+        }
+        
+        .incident-severity {
+            width: 8px;
+            height: 60px;
+            border-radius: 4px;
+        }
+        
+        .incident-content {
+            flex: 1;
+        }
+        
+        .incident-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .incident-desc {
+            font-size: 13px;
+            color: var(--phoenix-accent);
+            margin-bottom: 8px;
+        }
+        
+        .incident-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--phoenix-accent);
+        }
+        
+        .incident-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .incident-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-contain {
+            background: var(--incident-high);
+            color: white;
+        }
+        
+        .btn-remediate {
+            background: var(--recovery);
+            color: white;
+        }
+        
+        .btn-close {
+            background: var(--success);
+            color: white;
+        }
+        
+        /* Response Playbooks */
+        .response-playbooks {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 138, 101, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .playbook-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .playbook-card {
+            background: rgba(255, 138, 101, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 138, 101, 0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .playbook-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--phoenix-accent);
+        }
+        
+        .playbook-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .playbook-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .playbook-trigger {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .playbook-desc {
+            font-size: 13px;
+            color: var(--phoenix-accent);
+            margin-bottom: 15px;
+        }
+        
+        .playbook-stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .playbook-stat {
+            text-align: center;
+        }
+        
+        .playbook-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        
+        .playbook-label {
+            font-size: 11px;
+            color: var(--phoenix-accent);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        /* Recovery Timeline */
+        .recovery-timeline {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 138, 101, 0.3);
+            margin-bottom: 30px;
+        }
+        
+        .timeline {
+            position: relative;
+            margin-top: 20px;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--phoenix-accent);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 138, 101, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--phoenix-accent);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -38px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--phoenix-accent);
+            border: 3px solid var(--card-bg);
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: var(--phoenix-accent);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-desc {
+            font-size: 13px;
+            color: var(--phoenix-accent);
+        }
+        
+        /* Resilience Metrics */
+        .resilience-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 138, 101, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        
+        .metric-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--phoenix-primary), var(--phoenix-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 15px;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--phoenix-primary), var(--phoenix-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: var(--phoenix-accent);
+            font-weight: 600;
+        }
+        
+        /* Animations */
+        @keyframes rise {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes alertPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes incidentPulse {
+            0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+        }
+        
+        @keyframes phoenixRise {
+            0% { transform: translateY(100px) scale(0.8); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        
+        .phoenix-rise {
+            animation: phoenixRise 1s ease-out;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .incident-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .playbook-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .resilience-metrics {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="phoenix-bg"></div>
+    <div class="flame-particles" id="flameParticles"></div>
+    
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <div class="logo-text">Defend<span class="logo-iq">IQ</span> Enterprise</div>
+                </div>
+                <div class="phase-badge">Phoenix Protocol v10.0</div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="#">
+                    <span><i class="fas fa-fire"></i> Incident Response</span>
+                    <span class="menu-badge alert-pulse">ACTIVE</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-play-circle"></i> Response Playbooks</span>
+                    <span class="menu-badge">12</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-history"></i> Recovery Timeline</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-shield-virus"></i> Resilience Metrics</span>
+                    <span class="menu-badge">LIVE</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-file-alt"></i> Incident Reports</span>
+                    <span class="menu-badge">42</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-shield-alt"></i> Aegis Core</span>
+                </a></li>
+                <li><a href="#">
+                    <span><i class="fas fa-cog"></i> Protocol Settings</span>
+                </a></li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="page-title">
+                    <div class="title-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div>
+                        Phoenix Protocol Response
+                        <div class="title-badge">Cyber Resilience Active</div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-incident" id="declare-incident">
+                        <i class="fas fa-plus"></i> Declare Incident
+                    </button>
+                    <button class="btn btn-recovery" id="start-recovery">
+                        <i class="fas fa-sync-alt"></i> Start Recovery
+                    </button>
+                    <button class="btn btn-resilience" id="run-drill">
+                        <i class="fas fa-vial"></i> Run Drill
+                    </button>
+                    <div class="user-info">
+                        <div class="user-avatar">PP</div>
+                        <div>Incident Commander</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resilience Metrics -->
+            <div class="resilience-metrics">
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="metric-value">1.2m</div>
+                    <div class="metric-label">Mean Time to Detect</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="metric-value">4.8m</div>
+                    <div class="metric-label">Mean Time to Respond</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="metric-value">98.7%</div>
+                    <div class="metric-label">Recovery Success Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="metric-value">99.9%</div>
+                    <div class="metric-label">Service Availability</div>
+                </div>
+            </div>
+            
+            <!-- Incident Dashboard -->
+            <div class="incident-dashboard">
+                <div class="incident-map">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <i class="fas fa-map-marked-alt"></i>
+                            Live Incident Map
+                        </div>
+                        <button class="btn btn-primary" id="refresh-map">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="map-container" id="incident-map">
+                        <!-- Incident markers will be added dynamically -->
+                    </div>
+                </div>
+                
+                <div class="incident-stats">
+                    <div class="stat-item">
+                        <div class="stat-info">
+                            <div class="stat-icon" style="background: var(--incident-critical);">
+                                <i class="fas fa-skull-crossbones"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>Critical Incidents</h4>
+                                <p>Immediate response required</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--incident-critical);">3</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-info">
+                            <div class="stat-icon" style="background: var(--incident-high);">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>High Severity</h4>
+                                <p>Containment in progress</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--incident-high);">7</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-info">
+                            <div class="stat-icon" style="background: var(--incident-medium);">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>Medium Risk</h4>
+                                <p>Monitoring and analysis</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--incident-medium);">15</div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-info">
+                            <div class="stat-icon" style="background: var(--incident-low);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>Resolved</h4>
+                                <p>Incidents closed this week</p>
+                            </div>
+                        </div>
+                        <div class="stat-value" style="color: var(--incident-low);">42</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Active Incidents -->
+            <div class="active-incidents">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-list"></i>
+                        Active Security Incidents
+                    </div>
+                    <button class="btn btn-primary" id="view-all-incidents">
+                        <i class="fas fa-list"></i> View All
+                    </button>
+                </div>
+                
+                <div class="incident-list">
+                    <div class="incident-item phoenix-rise">
+                        <div class="incident-severity" style="background: var(--incident-critical);"></div>
+                        <div class="incident-content">
+                            <div class="incident-title">
+                                Ransomware Attack Detected
+                                <span class="menu-badge" style="background: var(--incident-critical);">CRITICAL</span>
+                            </div>
+                            <div class="incident-desc">Encryption activity detected across multiple file servers in US-WEST region</div>
+                            <div class="incident-meta">
+                                <span><i class="fas fa-clock"></i> 5 minutes ago</span>
+                                <span><i class="fas fa-server"></i> 12 servers affected</span>
+                                <span><i class="fas fa-user"></i> Incident: INC-2024-001</span>
+                            </div>
+                        </div>
+                        <div class="incident-actions">
+                            <button class="incident-btn btn-contain">Contain</button>
+                            <button class="incident-btn btn-remediate">Remediate</button>
+                        </div>
+                    </div>
+                    
+                    <div class="incident-item phoenix-rise">
+                        <div class="incident-severity" style="background: var(--incident-high);"></div>
+                        <div class="incident-content">
+                            <div class="incident-title">
+                                Data Exfiltration Attempt
+                                <span class="menu-badge" style="background: var(--incident-high);">HIGH</span>
+                            </div>
+                            <div class="incident-desc">Large volume data transfer to external IP addresses detected</div>
+                            <div class="incident-meta">
+                                <span><i class="fas fa-clock"></i> 12 minutes ago</span>
+                                <span><i class="fas fa-database"></i> 2.4GB transferred</span>
+                                <span><i class="fas fa-user"></i> Incident: INC-2024-002</span>
+                            </div>
+                        </div>
+                        <div class="incident-actions">
+                            <button class="incident-btn btn-contain">Contain</button>
+                            <button class="incident-btn btn-remediate">Remediate</button>
+                        </div>
+                    </div>
+                    
+                    <div class="incident-item phoenix-rise">
+                        <div class="incident-severity" style="background: var(--incident-medium);"></div>
+                        <div class="incident-content">
+                            <div class="incident-title">
+                                Phishing Campaign Active
+                                <span class="menu-badge" style="background: var(--incident-medium);">MEDIUM</span>
+                            </div>
+                            <div class="incident-desc">Targeted phishing emails impersonating IT department detected</div>
+                            <div class="incident-meta">
+                                <span><i class="fas fa-clock"></i> 25 minutes ago</span>
+                                <span><i class="fas fa-envelope"></i> 142 emails blocked</span>
+                                <span><i class="fas fa-user"></i> Incident: INC-2024-003</span>
+                            </div>
+                        </div>
+                        <div class="incident-actions">
+                            <button class="incident-btn btn-contain">Contain</button>
+                            <button class="incident-btn btn-close">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Response Playbooks -->
+            <div class="response-playbooks">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-play-circle"></i>
+                        Automated Response Playbooks
+                    </div>
+                    <button class="btn btn-primary" id="create-playbook">
+                        <i class="fas fa-plus"></i> New Playbook
+                    </button>
+                </div>
+                
+                <div class="playbook-grid">
+                    <div class="playbook-card">
+                        <div class="playbook-header">
+                            <div class="playbook-title">Ransomware Containment</div>
+                            <div class="playbook-trigger" style="background: var(--incident-critical); color: white;">AUTO-TRIGGER</div>
+                        </div>
+                        <div class="playbook-desc">Automated isolation of infected systems and activation of backup recovery procedures</div>
+                        <div class="playbook-stats">
+                            <div class="playbook-stat">
+                                <div class="playbook-value">24</div>
+                                <div class="playbook-label">Executions</div>
+                            </div>
+                            <div class="playbook-stat">
+                                <div class="playbook-value">100%</div>
+                                <div class="playbook-label">Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card">
+                        <div class="playbook-header">
+                            <div class="playbook-title">DDoS Mitigation</div>
+                            <div class="playbook-trigger" style="background: var(--incident-high); color: white;">AUTO-TRIGGER</div>
+                        </div>
+                        <div class="playbook-desc">Automated traffic filtering and cloud-based mitigation activation</div>
+                        <div class="playbook-stats">
+                            <div class="playbook-stat">
+                                <div class="playbook-value">18</div>
+                                <div class="playbook-label">Executions</div>
+                            </div>
+                            <div class="playbook-stat">
+                                <div class="playbook-value">100%</div>
+                                <div class="playbook-label">Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="playbook-card">
+                        <div class="playbook-header">
+                            <div class="playbook-title">Data Breach Response</div>
+                            <div class="playbook-trigger" style="background: var(--incident-critical); color: white;">MANUAL</div>
+                        </div>
+                        <div class="playbook-desc">Comprehensive incident response for data breach scenarios with legal compliance</div>
+                        <div class="playbook-stats">
+                            <div class="playbook-stat">
+                                <div class="playbook-value">3</div>
+                                <div class="playbook-label">Executions</div>
+                            </div>
+                            <div class="playbook-stat">
+                                <div class="playbook-value">100%</div>
+                                <div class="playbook-label">Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recovery Timeline -->
+            <div class="recovery-timeline">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-history"></i>
+                        Recovery Operations Timeline
+                    </div>
+                    <button class="btn btn-primary" id="export-timeline">
+                        <i class="fas fa-download"></i> Export Report
+                    </button>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">14:32 - Today</div>
+                        <div class="timeline-title">Incident Declared - Ransomware Detected</div>
+                        <div class="timeline-desc">Automated detection triggered ransomware containment playbook</div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-time">14:33 - Today</div>
+                        <div class="timeline-title">Infected Systems Isolated</div>
+                        <div class="timeline-desc">12 servers automatically quarantined from network</div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-time">14:35 - Today</div>
+                        <div class="timeline-title">Backup Recovery Initiated</div>
+                        <div class="timeline-desc">Latest clean backups mounted for recovery process</div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-time">14:40 - Today</div>
+                        <div class="timeline-title">Forensic Analysis Started</div>
+                        <div class="timeline-desc">Security team began investigation into attack vector</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Phoenix Protocol Incident Response System
+        const phoenixProtocol = {
+            // System state
+            state: {
+                activeIncidents: 25,
+                criticalIncidents: 3,
+                recoveryInProgress: true,
+                playbooks: [],
+                mttd: 1.2, // Mean Time to Detect (minutes)
+                mttr: 4.8  // Mean Time to Respond (minutes)
+            },
+            
+            // Initialize protocol
+            initialize: function() {
+                this.createFlameParticles();
+                this.generateIncidentMap();
+                this.bindEvents();
+                this.startLiveUpdates();
+                this.updateDashboard();
+            },
+            
+            // Create flame particle effects
+            createFlameParticles: function() {
+                const container = document.getElementById('flameParticles');
+                const particleCount = 30;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'flame-particle';
+                    
+                    // Random properties
+                    const left = Math.random() * 100;
+                    const delay = Math.random() * 8;
+                    const duration = 6 + Math.random() * 4;
+                    const size = 2 + Math.random() * 6;
+                    
+                    particle.style.left = `${left}%`;
+                    particle.style.animationDelay = `${delay}s`;
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    container.appendChild(particle);
+                }
+            },
+            
+            // Generate incident map with markers
+            generateIncidentMap: function() {
+                const map = document.getElementById('incident-map');
+                const incidents = [
+                    { type: 'critical', x: 25, y: 30, title: 'Ransomware' },
+                    { type: 'high', x: 60, y: 45, title: 'Data Exfil' },
+                    { type: 'medium', x: 40, y: 70, title: 'Phishing' },
+                    { type: 'critical', x: 75, y: 25, title: 'DDoS' },
+                    { type: 'high', x: 15, y: 60, title: 'Malware' },
+                    { type: 'medium', x: 80, y: 65, title: 'Brute Force' },
+                    { type: 'low', x: 50, y: 35, title: 'Policy Violation' }
+                ];
+                
+                incidents.forEach(incident => {
+                    const marker = document.createElement('div');
+                    marker.className = `incident-marker incident-${incident.type}`;
+                    marker.style.left = `${incident.x}%`;
+                    marker.style.top = `${incident.y}%`;
+                    marker.title = incident.title;
+                    
+                    // Add animation delay for variety
+                    marker.style.animationDelay = `${Math.random() * 2}s`;
+                    
+                    marker.addEventListener('click', () => {
+                        this.showIncidentDetails(incident);
+                    });
+                    
+                    map.appendChild(marker);
+                });
+            },
+            
+            // Bind event listeners
+            bindEvents: function() {
+                document.getElementById('declare-incident').addEventListener('click', () => {
+                    this.declareNewIncident();
+                });
+                
+                document.getElementById('start-recovery').addEventListener('click', () => {
+                    this.startRecoveryProcess();
+                });
+                
+                document.getElementById('run-drill').addEventListener('click', () => {
+                    this.runIncidentDrill();
+                });
+                
+                document.getElementById('refresh-map').addEventListener('click', () => {
+                    this.refreshIncidentMap();
+                });
+                
+                document.getElementById('view-all-incidents').addEventListener('click', () => {
+                    this.viewAllIncidents();
+                });
+                
+                document.getElementById('create-playbook').addEventListener('click', () => {
+                    this.createNewPlaybook();
+                });
+                
+                document.getElementById('export-timeline').addEventListener('click', () => {
+                    this.exportTimelineReport();
+                });
+                
+                // Incident action buttons
+                document.querySelectorAll('.btn-contain').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.containIncident(e.target.closest('.incident-item'));
+                    });
+                });
+                
+                document.querySelectorAll('.btn-remediate').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.remediateIncident(e.target.closest('.incident-item'));
+                    });
+                });
+                
+                document.querySelectorAll('.btn-close').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.closeIncident(e.target.closest('.incident-item'));
+                    });
+                });
+                
+                // Playbook cards
+                document.querySelectorAll('.playbook-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const title = card.querySelector('.playbook-title').textContent;
+                        this.executePlaybook(title);
+                    });
+                });
+            },
+            
+            // Declare new incident
+            declareNewIncident: function() {
+                this.showNotification('Opening Incident Declaration Wizard', 'info');
+                
+                // Simulate incident creation
+                setTimeout(() => {
+                    this.state.activeIncidents++;
+                    this.state.criticalIncidents++;
+                    this.updateDashboard();
+                    this.showNotification('New critical incident declared. Response teams notified.', 'warning');
+                    this.addNewIncidentToMap();
+                }, 1000);
+            },
+            
+            // Start recovery process
+            startRecoveryProcess: function() {
+                this.state.recoveryInProgress = true;
+                this.showNotification('Recovery process initiated. All systems entering restoration mode.', 'info');
+                
+                // Add recovery step to timeline
+                this.addTimelineEvent('Recovery Process Started', 'Full system restoration and validation initiated');
+                
+                // Simulate recovery progress
+                setTimeout(() => {
+                    this.showNotification('Recovery completed successfully. All systems restored.', 'success');
+                    this.state.recoveryInProgress = false;
+                }, 5000);
+            },
+            
+            // Run incident drill
+            runIncidentDrill: function() {
+                this.showNotification('Starting incident response drill simulation...', 'info');
+                
+                let progress = 0;
+                const drillInterval = setInterval(() => {
+                    progress += 10;
+                    
+                    if (progress >= 100) {
+                        clearInterval(drillInterval);
+                        this.showNotification('Incident response drill completed. Team performance: 98%', 'success');
+                    }
+                }, 200);
+            },
+            
+            // Refresh incident map
+            refreshIncidentMap: function() {
+                const map = document.getElementById('incident-map');
+                map.innerHTML = '';
+                this.generateIncidentMap();
+                this.showNotification('Incident map refreshed with latest data', 'info');
+            },
+            
+            // View all incidents
+            viewAllIncidents: function() {
+                this.showNotification('Opening Incident Management Console', 'info');
+            },
+            
+            // Create new playbook
+            createNewPlaybook: function() {
+                this.showNotification('Opening Response Playbook Creation Interface', 'info');
+            },
+            
+            // Export timeline report
+            exportTimelineReport: function() {
+                this.showNotification('Generating and exporting recovery timeline report...', 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('Timeline report exported successfully (PDF, 1.8MB)', 'success');
+                }, 2000);
+            },
+            
+            // Contain incident
+            containIncident: function(incidentItem) {
+                const incidentTitle = incidentItem.querySelector('.incident-title').textContent.split('\n')[0].trim();
+                incidentItem.style.opacity = '0.7';
+                
+                this.showNotification(`Containment procedures initiated for: ${incidentTitle}`, 'warning');
+                
+                setTimeout(() => {
+                    this.showNotification(`Incident contained successfully: ${incidentTitle}`, 'success');
+                    this.addTimelineEvent(`Incident Contained`, `${incidentTitle} - Systems isolated and secured`);
+                }, 2000);
+            },
+            
+            // Remediate incident
+            remediateIncident: function(incidentItem) {
+                const incidentTitle = incidentItem.querySelector('.incident-title').textContent.split('\n')[0].trim();
+                
+                this.showNotification(`Remediation process started for: ${incidentTitle}`, 'info');
+                
+                setTimeout(() => {
+                    this.showNotification(`Incident remediated: ${incidentTitle} - Root cause addressed`, 'success');
+                    this.addTimelineEvent(`Incident Remediated`, `${incidentTitle} - Root cause eliminated and systems restored`);
+                }, 3000);
+            },
+            
+            // Close incident
+            closeIncident: function(incidentItem) {
+                const incidentTitle = incidentItem.querySelector('.incident-title').textContent.split('\n')[0].trim();
+                incidentItem.style.opacity = '0.5';
+                
+                setTimeout(() => {
+                    incidentItem.remove();
+                    this.state.activeIncidents--;
+                    this.updateDashboard();
+                    this.showNotification(`Incident closed: ${incidentTitle}`, 'success');
+                }, 500);
+            },
+            
+            // Execute playbook
+            executePlaybook: function(playbookName) {
+                this.showNotification(`Executing response playbook: ${playbookName}`, 'info');
+                
+                setTimeout(() => {
+                    this.showNotification(`Playbook ${playbookName} executed successfully`, 'success');
+                    this.addTimelineEvent(`Playbook Executed`, `${playbookName} - Automated response completed`);
+                }, 2000);
+            },
+            
+            // Show incident details
+            showIncidentDetails: function(incident) {
+                this.showNotification(`Incident Details: ${incident.title} (${incident.type.toUpperCase()})`, 'info');
+            },
+            
+            // Add new incident to map
+            addNewIncidentToMap: function() {
+                const map = document.getElementById('incident-map');
+                const newIncident = {
+                    type: 'critical',
+                    x: 30 + Math.random() * 40,
+                    y: 20 + Math.random() * 50,
+                    title: 'New Critical Incident'
+                };
+                
+                const marker = document.createElement('div');
+                marker.className = `incident-marker incident-${newIncident.type}`;
+                marker.style.left = `${newIncident.x}%`;
+                marker.style.top = `${newIncident.y}%`;
+                marker.title = newIncident.title;
+                marker.style.animation = 'incidentPulse 1s infinite';
+                
+                marker.addEventListener('click', () => {
+                    this.showIncidentDetails(newIncident);
+                });
+                
+                map.appendChild(marker);
+            },
+            
+            // Add timeline event
+            addTimelineEvent: function(title, description) {
+                const timeline = document.querySelector('.timeline');
+                const now = new Date();
+                const timeString = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')} - Today`;
+                
+                const event = document.createElement('div');
+                event.className = 'timeline-item phoenix-rise';
+                event.innerHTML = `
+                    <div class="timeline-time">${timeString}</div>
+                    <div class="timeline-title">${title}</div>
+                    <div class="timeline-desc">${description}</div>
+                `;
+                
+                timeline.appendChild(event);
+                
+                // Scroll to bottom
+                timeline.scrollTop = timeline.scrollHeight;
+            },
+            
+            // Start live updates
+            startLiveUpdates: function() {
+                // Simulate real-time incident updates
+                setInterval(() => {
+                    this.simulateLiveActivity();
+                }, 10000);
+            },
+            
+            // Simulate live activity
+            simulateLiveActivity: function() {
+                const activities = [
+                    {
+                        type: 'info',
+                        message: 'Automated threat hunting completed - No new threats detected'
+                    },
+                    {
+                        type: 'success',
+                        message: 'All security controls operating within normal parameters'
+                    },
+                    {
+                        type: 'info',
+                        message: 'Periodic system health check completed - All systems optimal'
+                    }
+                ];
+                
+                const activity = activities[Math.floor(Math.random() * activities.length)];
+                this.showNotification(activity.message, activity.type);
+            },
+            
+            // Update dashboard
+            updateDashboard: function() {
+                // Update incident counts
+                document.querySelector('.stat-item:nth-child(1) .stat-value').textContent = this.state.criticalIncidents;
+                document.querySelector('.stat-item:nth-child(2) .stat-value').textContent = 7; // High incidents
+                document.querySelector('.stat-item:nth-child(3) .stat-value').textContent = 15; // Medium incidents
+                document.querySelector('.stat-item:nth-child(4) .stat-value').textContent = 42; // Resolved incidents
+                
+                // Update resilience metrics with slight variations
+                document.querySelector('.metric-card:nth-child(1) .metric-value').textContent = 
+                    (this.state.mttd + (Math.random() - 0.5) * 0.2).toFixed(1) + 'm';
+                document.querySelector('.metric-card:nth-child(2) .metric-value').textContent = 
+                    (this.state.mttr + (Math.random() - 0.5) * 0.4).toFixed(1) + 'm';
+            },
+            
+            // Notification system
+            showNotification: function(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `phoenix-notification notification-${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                        ${message}
+                    </div>
+                `;
+                
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#43a047' : type === 'warning' ? '#ffb300' : '#1976d2'};
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 12px;
+                    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    animation: slideInRight 0.3s ease-out;
+                    max-width: 400px;
+                    border-left: 4px solid ${type === 'success' ? '#2e7d32' : type === 'warning' ? '#f57c00' : '#1565c0'};
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease-in';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 4000);
+            }
+        };
+
+        // Initialize Phoenix Protocol when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            phoenixProtocol.initialize();
+            
+            // Add CSS for notifications
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                
+                .phoenix-notification {
+                    font-weight: 600;
+                    backdrop-filter: blur(10px);
+                }
+                
+                .notification-content i {
+                    margin-right: 10px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                console.log('Phoenix Protocol PWA Service Worker would be registered here');
+            });
+        }
+    </script>
+</body>
+</html>

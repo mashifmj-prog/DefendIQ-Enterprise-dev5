@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DefendIQ Enterprise - Mobile Analytics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* Mobile-first responsive layout */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 15px;
+        }
+        
+        /* Header with mobile menu */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .logo-icon {
+            background: white;
+            color: var(--primary);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: block;
+        }
+        
+        .nav-menu {
+            display: none;
+            position: absolute;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: white;
+            color: var(--dark);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 10px 10px;
+            padding: 15px;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .nav-menu.active {
+            display: flex;
+        }
+        
+        .nav-item {
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-item:hover {
+            background: var(--gray-light);
+        }
+        
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Main content */
+        .main-content {
+            padding: 20px 0;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Stats cards - mobile responsive */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        /* Charts section */
+        .charts-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        
+        .chart-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        /* Risk scoring section */
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .risk-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .risk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .risk-title {
+            font-weight: 600;
+        }
+        
+        .risk-badge {
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .risk-badge.low {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .risk-badge.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .risk-badge.high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .risk-progress {
+            height: 8px;
+            background: var(--gray-light);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .risk-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .risk-progress-bar.low {
+            background: var(--success);
+            width: 25%;
+        }
+        
+        .risk-progress-bar.medium {
+            background: var(--warning);
+            width: 60%;
+        }
+        
+        .risk-progress-bar.high {
+            background: var(--danger);
+            width: 85%;
+        }
+        
+        /* ZaraAI Mobile Chat */
+        .zara-ai-chat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .zara-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .zara-toggle:hover {
+            transform: scale(1.05);
+        }
+        
+        .zara-chat-container {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 300px;
+            height: 400px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .zara-chat-container.active {
+            display: flex;
+        }
+        
+        .zara-chat-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .zara-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .zara-chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.zara {
+            align-self: flex-start;
+            background: var(--gray-light);
+            color: var(--dark);
+            border-bottom-left-radius: 5px;
+        }
+        
+        .zara-chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        .zara-chat-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--gray-light);
+            border-radius: 20px;
+            outline: none;
+        }
+        
+        .zara-chat-input button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        /* Offline indicator */
+        .offline-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--warning);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: 500;
+            display: none;
+            z-index: 1000;
+        }
+        
+        /* Mobile installation prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+        
+        .install-prompt.active {
+            display: flex;
+        }
+        
+        .install-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .install-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .install-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--dark);
+        }
+        
+        /* Tablet and desktop styles */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 720px;
+                margin: 0 auto;
+            }
+            
+            .mobile-menu-btn {
+                display: none;
+            }
+            
+            .nav-menu {
+                display: flex;
+                position: static;
+                background: transparent;
+                color: white;
+                box-shadow: none;
+                flex-direction: row;
+                padding: 0;
+            }
+            
+            .nav-item:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .charts-section {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            
+            .chart-container {
+                margin-bottom: 0;
+            }
+            
+            .risk-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .container {
+                max-width: 960px;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Offline Indicator -->
+    <div class="offline-indicator" id="offlineIndicator">
+        <i class="fas fa-wifi"></i> You are currently offline. Some features may be limited.
+    </div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span>DefendIQ</span>
+                </div>
+                
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <nav class="nav-menu" id="navMenu">
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-book"></i> Training
+                    </a>
+                    <a href="#" class="nav-item active">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-file-contract"></i> Compliance
+                    </a>
+                    <a href="#" class="nav-item">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <h1 class="page-title">
+                <i class="fas fa-chart-bar"></i> Security Analytics Dashboard
+            </h1>
+            
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #dbeafe; color: var(--primary);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-label">Trained Employees</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #f3e8ff; color: var(--secondary);">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-value">94%</div>
+                    <div class="stat-label">Completion Rate</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #dcfce7; color: var(--success);">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="stat-value">82%</div>
+                    <div class="stat-label">Security Score</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fef3c7; color: var(--warning);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Pending Actions</div>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <div class="chart-container">
+                    <div class="section-header">
+                        <h2 class="section-title">Training Progress</h2>
+                        <select>
+                            <option>Last 7 days</option>
+                            <option>Last 30 days</option>
+                            <option>Last 90 days</option>
+                        </select>
+                    </div>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-line"></i> Interactive Chart: Training Progress Over Time
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="section-header">
+                        <h2 class="section-title">Risk Distribution</h2>
+                        <select>
+                            <option>By Department</option>
+                            <option>By Location</option>
+                            <option>By Role</option>
+                        </select>
+                    </div>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-pie"></i> Interactive Chart: Risk Distribution
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Risk Scoring -->
+            <div class="section-header">
+                <h2 class="section-title">Risk Scoring by Department</h2>
+                <button class="btn btn-outline">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+            
+            <div class="risk-grid">
+                <div class="risk-card">
+                    <div class="risk-header">
+                        <div class="risk-title">Engineering</div>
+                        <div class="risk-badge low">Low Risk</div>
+                    </div>
+                    <div class="risk-progress">
+                        <div class="risk-progress-bar low"></div>
+                    </div>
+                    <div class="risk-stats">
+                        <div>Completion: 96%</div>
+                        <div>Avg. Score: 88%</div>
+                    </div>
+                </div>
+                
+                <div class="risk-card">
+                    <div class="risk-header">
+                        <div class="risk-title">Marketing</div>
+                        <div class="risk-badge medium">Medium Risk</div>
+                    </div>
+                    <div class="risk-progress">
+                        <div class="risk-progress-bar medium"></div>
+                    </div>
+                    <div class="risk-stats">
+                        <div>Completion: 72%</div>
+                        <div>Avg. Score: 65%</div>
+                    </div>
+                </div>
+                
+                <div class="risk-card">
+                    <div class="risk-header">
+                        <div class="risk-title">Sales</div>
+                        <div class="risk-badge high">High Risk</div>
+                    </div>
+                    <div class="risk-progress">
+                        <div class="risk-progress-bar high"></div>
+                    </div>
+                    <div class="risk-stats">
+                        <div>Completion: 58%</div>
+                        <div>Avg. Score: 52%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- ZaraAI Chat -->
+    <div class="zara-ai-chat">
+        <div class="zara-chat-container" id="zaraChat">
+            <div class="zara-chat-header">
+                <div class="zara-avatar">Z</div>
+                <div>
+                    <div>ZaraAI Assistant</div>
+                    <div style="font-size: 0.7rem;">Online</div>
+                </div>
+            </div>
+            <div class="zara-chat-messages" id="chatMessages">
+                <div class="message zara">
+                    Hello! I'm Zara, your security assistant. How can I help you today?
+                </div>
+            </div>
+            <div class="zara-chat-input">
+                <input type="text" placeholder="Type your message..." id="chatInput">
+                <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button class="zara-toggle" id="zaraToggle">
+            <i class="fas fa-robot"></i>
+        </button>
+    </div>
+    
+    <!-- Install Prompt -->
+    <div class="install-prompt" id="installPrompt">
+        <div class="install-info">
+            <div class="install-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div>
+                <div style="font-weight: 600;">Install DefendIQ</div>
+                <div style="font-size: 0.8rem;">Get full mobile experience with offline access</div>
+            </div>
+        </div>
+        <div class="install-actions">
+            <button class="btn btn-outline" id="installLater">Later</button>
+            <button class="btn btn-primary" id="installNow">Install</button>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+        
+        // ZaraAI chat toggle
+        document.getElementById('zaraToggle').addEventListener('click', function() {
+            document.getElementById('zaraChat').classList.toggle('active');
+        });
+        
+        // Send message in ZaraAI chat
+        document.getElementById('sendMessage').addEventListener('click', sendMessage);
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Add user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'message user';
+                userMessage.textContent = message;
+                document.getElementById('chatMessages').appendChild(userMessage);
+                
+                // Clear input
+                input.value = '';
+                
+                // Simulate ZaraAI response
+                setTimeout(() => {
+                    const zaraResponse = document.createElement('div');
+                    zaraResponse.className = 'message zara';
+                    
+                    // Simple response logic based on keywords
+                    if (message.toLowerCase().includes('risk') || message.toLowerCase().includes('security')) {
+                        zaraResponse.textContent = "Based on our analytics, your overall security risk is medium. I recommend focusing training on the Sales department which shows higher risk levels.";
+                    } else if (message.toLowerCase().includes('training') || message.toLowerCase().includes('module')) {
+                        zaraResponse.textContent = "I see you've completed 82% of required training. Your next recommended module is 'Advanced Phishing Defense' which addresses your team's current vulnerability.";
+                    } else if (message.toLowerCase().includes('certificate') || message.toLowerCase().includes('certification')) {
+                        zaraResponse.textContent = "You can access your certificates from the Training section. All certificates are available offline and can be shared via QR code.";
+                    } else {
+                        zaraResponse.textContent = "I can help you with security analytics, training recommendations, and risk assessments. What specific information are you looking for?";
+                    }
+                    
+                    document.getElementById('chatMessages').appendChild(zaraResponse);
+                    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+                }, 1000);
+            }
+        }
+        
+        // Simulate offline/online status
+        window.addEventListener('online', function() {
+            document.getElementById('offlineIndicator').style.display = 'none';
+        });
+        
+        window.addEventListener('offline', function() {
+            document.getElementById('offlineIndicator').style.display = 'block';
+        });
+        
+        // Install prompt simulation
+        setTimeout(() => {
+            document.getElementById('installPrompt').classList.add('active');
+        }, 5000);
+        
+        document.getElementById('installLater').addEventListener('click', function() {
+            document.getElementById('installPrompt').classList.remove('active');
+        });
+        
+        document.getElementById('installNow').addEventListener('click', function() {
+            alert("DefendIQ installation started. You'll be able to access the app offline once installed.");
+            document.getElementById('installPrompt').classList.remove('active');
+        });
+        
+        // Service Worker Registration (simulated)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // In a real implementation, we would register the service worker here
+                console.log('Service Worker would be registered for offline functionality');
+            });
+        }
+    </script>
+</body>
+</html>
